@@ -1,4 +1,3 @@
-
 const prisma = require('../config/db'); // Import Prisma client
 
 
@@ -19,6 +18,31 @@ const getProperties = async (req, res) => {
 };
 
 
+const getPropertyById = async (req, res) => {
+    const propertyId = parseInt(req.params.id);
+
+    // Basic validation for ID
+    if (isNaN(propertyId)) {
+        return res.status(400).json({ message: 'Invalid property ID format.' });
+    }
+
+    try {
+        const property = await prisma.property.findUnique({
+            where: { id: propertyId },
+        });
+
+        if (!property) {
+            console.log("Hello",req.params.id);
+            return res.status(404).json({ message: 'Property not found.' });
+        }
+        res.status(200).json(property);
+    } catch (error) {
+        console.error('Error fetching property by ID:', error);
+        res.status(500).json({ message: 'Server error while fetching property.' });
+    }
+};
+
+
 
 
 
@@ -28,6 +52,8 @@ const getProperties = async (req, res) => {
 
 module.exports = {
     getProperties,
+    getPropertyById,
+
     
     
 };

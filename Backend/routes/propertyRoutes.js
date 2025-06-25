@@ -1,4 +1,3 @@
-// backend/routes/propertyRoutes.js
 const express = require('express');
 
 
@@ -14,6 +13,8 @@ const router = express.Router();
 router.route('/')
     .get(getProperties)     // Public
 
+router.route('/:id')
+    .get(getPropertyById)         // Public can use
 
 
 module.exports = router;

@@ -1,6 +1,6 @@
 const express = require('express');
-const cors = require('cors'); // Import cors middleware
-const prisma = require('./config/db'); // Import Prisma client
+const cors = require('cors'); // remark : mport cors middleware 
+const prisma = require('./config/db'); // importing Prisma client
 const propertyRoutes = require('./routes/propertyRoutes');
 
 const app = express();
