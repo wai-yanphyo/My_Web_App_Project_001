@@ -13,12 +13,15 @@ import {
   DarkMode as DarkModeIcon,
  } from "@mui/icons-material";
 
+import { useApp } from '../ThemedApp';
+
 import { useState } from 'react';
 
 const  Header=()=> {
 
-     const [mode, setMode] = useState("dark");
+    const {mode, setMode, showDrawer, setShowDrawer }=useApp();
 
+   
 
         return (
             <AppBar position="static">
