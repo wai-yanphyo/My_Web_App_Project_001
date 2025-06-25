@@ -31,11 +31,11 @@ import { useState } from "react";
     const AppDrawer=()=> {
         
         const { user, handleLogout } = true;
-        const {showDrawer, setShowDrawer} = useState(true);
+        const [showDrawer, setShowDrawer]= useState(true);
             return (
                     <div>
                     <Drawer
-                        open={true}
+                        open={showDrawer}
                         onClose={() => setShowDrawer(false)}>
                         <Box
                         sx={{
