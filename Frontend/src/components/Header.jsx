@@ -29,7 +29,7 @@ const  Header=()=> {
                 <IconButton
                 color="inherit"
                 edge="start"
-                 onClick={()=>{true}}>
+                 onClick={()=>setShowDrawer(true)}>
                 <MenuIcon />
                 </IconButton>
                 <Typography sx={{ flexGrow: 1, ml: 2 }}>Property Management</Typography>

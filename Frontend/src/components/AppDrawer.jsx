@@ -26,12 +26,13 @@ import {
 
  import { deepPurple } from "@mui/material/colors";
 import { useState } from "react";
+import { useApp } from '../ThemedApp';
+
  
- 
-    const AppDrawer=()=> {
+const AppDrawer=()=> {
         
         const { user, handleLogout } = true;
-        const [showDrawer, setShowDrawer]= useState(true);
+         const {showDrawer, setShowDrawer }=useApp();
             return (
                     <div>
                     <Drawer
