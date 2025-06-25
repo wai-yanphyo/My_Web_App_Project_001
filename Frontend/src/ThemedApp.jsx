@@ -32,7 +32,7 @@ const ThemedApp=()=> {
 const [showDrawer, setShowDrawer] = useState(false);
 const [globalMsg, setGlobalMsg] = useState(null);
 const [auth, setAuth] = useState(null);
-const [mode, setMode] = useState("dark");
+const [mode, setMode] = useState("light");  //dark
 
 
     const theme= useMemo(()=>{
