@@ -1,4 +1,23 @@
+import { 
+    Box, 
+    AppBar, 
+    Toolbar, 
+    Typography, 
+    IconButton, 
+} from "@mui/material";
+
+import { 
+    Box, 
+    AppBar, 
+    Toolbar, 
+    Typography, 
+    IconButton, 
+} from "@mui/material";
+
 const  Header=()=> {
+
+     const [mode, setMode] = useState("dark");
+
 
         return (
             <AppBar position="static">
@@ -6,7 +25,7 @@ const  Header=()=> {
                 <IconButton
                 color="inherit"
                 edge="start"
-                 onClick={()=>{}}>
+                 onClick={()=>{true}}>
                 <MenuIcon />
                 </IconButton>
                 <Typography sx={{ flexGrow: 1, ml: 2 }}>Property Management</Typography>
@@ -35,3 +54,5 @@ const  Header=()=> {
             </AppBar>
         );
 };
+
+export default Header;
