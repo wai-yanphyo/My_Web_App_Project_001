@@ -4,7 +4,9 @@ import { Box, Container } from "@mui/material";
  import Header from "./components/Header";
  import AppDrawer from "./components/AppDrawer";
  import LoginPage from "./pages/LoginPage";
-  import RegisterPage from "./pages/RegisterPage";
+import RegisterPage from "./pages/RegisterPage";
+import PropertyFormPage from "./pages/PropertyFormPage";
+
 
 
 
@@ -16,7 +18,8 @@ import { Box, Container } from "@mui/material";
       <Header />
       <AppDrawer />
       {/* <LoginPage /> */}
-      <RegisterPage />
+      {/* <RegisterPage /> */}
+      <PropertyFormPage/>
 
       
       
