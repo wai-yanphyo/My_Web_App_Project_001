@@ -28,6 +28,10 @@ import {
 import { useState } from "react";
 import { useApp } from '../ThemedApp';
 
+
+ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+
+
  
 const AppDrawer=()=> {
         
@@ -77,7 +81,7 @@ const AppDrawer=()=> {
                         <List>
                             {/* Properties Link to see my properties */}
                             <ListItem disablePadding>
-                                <ListItemButton>
+                                <ListItemButton component={Link} to="/">
                                     <ListItemIcon>
                                         <HomeIcon />
                                     </ListItemIcon>
@@ -108,7 +112,7 @@ const AppDrawer=()=> {
                             
                             {/* can go eaily to login page by clicking on it */}
                             <ListItem disablePadding>
-                                <ListItemButton>
+                                <ListItemButton component={Link} to="/login">
                                     <ListItemIcon>
                                         <LoginIcon />
                                     </ListItemIcon>
@@ -118,7 +122,7 @@ const AppDrawer=()=> {
 
                             {/* Register Link */}
                             <ListItem disablePadding>
-                                <ListItemButton >
+                                <ListItemButton component={Link} to="/register">
                                     <ListItemIcon>
                                         <HowToRegIcon />
                                     </ListItemIcon>
