@@ -10,3 +10,86 @@ datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
+
+
+enum Role {
+  CUSTOMER
+  AGENT
+  ADMIN
+}
+
+model User {
+  id               Int          @id @default(autoincrement())
+  email            String       @unique
+  password         String
+  role             Role         @default(CUSTOMER) // New: Default role is CUSTOMER
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  properties       Property[]   // Properties owned by this user (if AGENT/ADMIN)
+  appointmentsMade Appointment[] @relation("CustomerAppointments") // Appointments booked by this user (if CUSTOMER)
+  appointmentsAssigned Appointment[] @relation("AgentAppointments") // Appointments assigned to this user (if AGENT)
+  comments         CommentAndRating[] // New: Comments made by this user
+}
+
+// Define an Enum for Appointment Status
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+model Property {
+  id          Int      @id @default(autoincrement())
+  address     String
+  price       Float
+  bedrooms    Int
+  bathrooms   Float
+  description String?
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  ownerId     Int
+  owner       User     @relation(fields: [ownerId], references: [id])
+  appointments Appointment[] // Appointments related to this property
+  comments    CommentAndRating[] // New: Comments for this property
+
+  @@index([ownerId])
+}
+
+// NEW: Model for Comments and Ratings
+model CommentAndRating {
+  id          Int      @id @default(autoincrement())
+  propertyId  Int      // Foreign key to the Property
+  customerId  Int      // Foreign key to the User (customer who made the comment)
+  rating      Int      // 1 to 5 stars
+  comment     String?  // Optional comment text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  property Property @relation(fields: [propertyId], references: [id])
+  customer User     @relation(fields: [customerId], references: [id])
+
+  @@index([propertyId])
+  @@index([customerId])
+}
+
+model Appointment {
+  id              Int               @id @default(autoincrement())
+  propertyId      Int
+  customerId      Int               // The user who requested the appointment
+  agentId         Int?              // The agent assigned to this appointment (optional)
+  appointmentDate DateTime
+  status          AppointmentStatus @default(PENDING) // New: Status of the appointment
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  property Property @relation(fields: [propertyId], references: [id])
+  customer User     @relation("CustomerAppointments", fields: [customerId], references: [id])
+  agent    User?    @relation("AgentAppointments", fields: [agentId], references: [id]) // Optional relation to agent
+
+  @@index([propertyId])
+  @@index([customerId])
+  @@index([agentId])
+}
+
