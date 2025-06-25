@@ -1,4 +1,9 @@
 import AppDrawer from "./components/AppDrawer";
+import PropertyListPage from './pages/PropertyListPage';
+
+ import PropertyFormPage from './pages/PropertyFormPage';
+ import LoginPage from './pages/LoginPage';
+ import RegisterPage from './pages/RegisterPage';
 
 
 //import { useState, createContext } from "react"
@@ -11,9 +16,12 @@ import { deepPurple, grey } from "@mui/material/colors";
   Snackbar,
  } from "@mui/material";
 
- 
+import Template from "./Template";
 
- import Template from "./Template";
+import { 
+  createBrowserRouter, 
+  RouterProvider, 
+} from "react-router-dom";
 
 
 
@@ -26,6 +34,43 @@ const AppContext = createContext();
  }
 
  
+
+// ===================Create Router=============
+
+const router=createBrowserRouter([
+    {
+        path: "/",
+        element:<Template />,
+        children: [
+            {
+                path : "/",
+                element: <PropertyListPage />,
+            },
+            {
+            path: "/login",
+            element: <LoginPage />,
+            },
+            {
+            path: "/register",
+            element: <RegisterPage />,
+            },
+            {
+            path:"properties/edit/:id",
+            element: <PropertyFormPage />,
+            },
+            {
+            path:"/properties/new",
+            element: <PropertyFormPage />,
+            },
+            
+
+        ],
+
+    },
+ ]);
+
+// ===================Router===============
+
 
 
 const ThemedApp=()=> {
@@ -48,7 +93,8 @@ const [mode, setMode] = useState("light");  //dark
         <ThemeProvider theme={theme}>
             <AppContext.Provider value={{ showDrawer, setShowDrawer,mode, setMode, }}>
             
-            <Template />
+            {/* Replce with route at <Template /> */}
+            <RouterProvider router={router} />  
             <CssBaseline />
             
         

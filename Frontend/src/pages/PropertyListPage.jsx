@@ -4,13 +4,15 @@ import {
     Dialog, DialogTitle, DialogContent, DialogActions,
 } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+
 
 import PropertyCard from '../components/PropertyCard'; 
 
 
 const PropertyListPage = () => {
    
-
+    const navigate = useNavigate();
     const [openDialog, setOpenDialog] = useState(false);
     const [dialogTitle, setDialogTitle] = useState('');
     const [dialogMessage, setDialogMessage] = useState('');
@@ -37,7 +39,7 @@ const PropertyListPage = () => {
                     <Button
                         variant="contained"
                         startIcon={<AddIcon />}
-                        onClick={() => {}}
+                        onClick={() => navigate('/properties/new')}
                         sx={{ textTransform: 'none' }}
                     >
                         Add New Property

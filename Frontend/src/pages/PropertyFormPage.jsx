@@ -1,11 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
     Container, Box, Typography, TextField, Button, CircularProgress, Alert,
 } from '@mui/material';
 
 const PropertyFormPage = () => {
-    
+    const navigate = useNavigate();
+
 
     return (
         <Container maxWidth="sm" sx={{ mt: 4, mb: 4, bgcolor: 'background.paper', p: 4, borderRadius: 2, boxShadow: 3 }}>
@@ -83,7 +85,7 @@ const PropertyFormPage = () => {
                 <Button
                     variant="outlined"
                     color="secondary"
-                    onClick={()=>{}}
+                    onClick={() => navigate('/')}
                     sx={{ mt: 1, p: 1.5, textTransform: 'none' }}
                 >
                     Cancel

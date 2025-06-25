@@ -7,6 +7,7 @@ import { Box, Container } from "@mui/material";
 import RegisterPage from "./pages/RegisterPage";
 import PropertyFormPage from "./pages/PropertyFormPage";
 import PropertyListPage from "./pages/PropertyListPage";
+import { Outlet } from "react-router-dom";
 
 
 
@@ -17,10 +18,15 @@ import PropertyListPage from "./pages/PropertyListPage";
         
       <Header />
       <AppDrawer />
-      {/* <LoginPage /> */}
-      {/* <RegisterPage /> */}
-      {/* <PropertyFormPage/> */}
-      < PropertyListPage />
+       
+      {/* <LoginPage />
+      <RegisterPage />
+      <PropertyFormPage/>
+      < PropertyListPage /> */}
+
+      <Container maxWidth="sm" sx={{ mt: 4 }}>
+        <Outlet />
+      </Container>
 
       
       
