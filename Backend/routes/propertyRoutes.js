@@ -6,6 +6,9 @@ const {
     getProperties,
     getPropertyById,
     createProperty,
+    updateProperty,
+    deleteProperty,
+
 } = require('../controllers/propertyController');
 
 
@@ -16,7 +19,14 @@ router.route('/')
     .post(createProperty)
 
 router.route('/:id')
-    .get(getPropertyById)        // Public can use
+    .get(getPropertyById) 
+    .put( updateProperty)
+    .delete(deleteProperty); 
+
+
+
+
+
 
 module.exports = router;
 
