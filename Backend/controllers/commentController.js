@@ -43,8 +43,32 @@ const createComment = async (req, res) => {
     }
 };
 
+
+const getCommentsForProperty = async (req, res) => {
+    const propertyId = parseInt(req.params.propertyId);
+
+    if (isNaN(propertyId)) {
+        return res.status(400).json({ message: 'Invalid property ID format.' });
+    }
+
+    try {
+        const comments = await prisma.commentAndRating.findMany({
+            where: { propertyId: propertyId },
+            include: {
+                customer: { select: { email: true, id: true } } 
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+        res.status(200).json(comments);
+    } catch (error) {
+        console.error('Error fetching comments for property:', error);
+        res.status(500).json({ message: 'Server error while fetching comments.' });
+    }
+};
+
 module.exports = {
     createComment,
+    getCommentsForProperty,
 
 };
 
