@@ -5,6 +5,7 @@ const propertyRoutes = require('./routes/propertyRoutes');
 const userRoutes = require('./routes/userRoutes');
 const commentRoutes=require('./routes/commentRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 
 
@@ -21,6 +22,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/appointments', appointmentRoutes);
 
+
+app.use('/api', authRoutes);
 
 
 
