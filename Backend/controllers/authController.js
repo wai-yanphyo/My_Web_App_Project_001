@@ -50,7 +50,34 @@ const registerUser = async (req, res) => {
 };
 
 
+const loginUser = async (req, res) => {
+    const { email, password } = req.body || {};
+
+    if (!email || !password) {
+        return res.status(400).json({ message: 'Please enter all fields (email and password).' });
+    }
+
+    try {
+        const user = await prisma.user.findUnique({ where: { email } });
+
+        if (user && (await bcrypt.compare(password, user.password))) {
+            res.json({
+                id: user.id,
+                email: user.email,
+                token: generateToken(user.id),
+            });
+        } else {
+            res.status(400).json({ message: 'Invalid credentials. Please check your email and password.' });
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({ message: 'Server error during login.' });
+    }
+};
+
+
 
 module.exports = {
     registerUser,
+    loginUser
 }
