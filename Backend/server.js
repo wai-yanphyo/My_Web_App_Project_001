@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors'); 
 const prisma = require('./config/db'); 
 const propertyRoutes = require('./routes/propertyRoutes');
+const userRoutes = require('./routes/userRoutes');
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -11,6 +13,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use(express.urlencoded({ extended: true }));
 app.use('/api/properties', propertyRoutes); 
+app.use('/api/users', userRoutes);
 
 
 
