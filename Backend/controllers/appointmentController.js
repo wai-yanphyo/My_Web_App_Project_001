@@ -111,6 +111,52 @@ const getMyAgentAppointments = async (req, res) => {
 };
 
 
+const confirmAppointment = async (req, res) => {
+    const appointmentId = parseInt(req.params.id);
+    const { agentId } = req.body; 
+
+    if (isNaN(appointmentId)) {
+        return res.status(400).json({ message: 'Invalid appointment ID format.' });
+    }
+
+    try {
+        const appointment = await prisma.appointment.findUnique({
+            where: { id: appointmentId }
+        });
+
+        if (!appointment) {
+            return res.status(404).json({ message: 'Appointment not found.' });
+        }
+
+        // Validate agentId if provided
+        let assignedAgent = null;
+        if (agentId) {
+            assignedAgent = await prisma.user.findUnique({
+                where: { id: parseInt(agentId) }
+            });
+            if (!assignedAgent || assignedAgent.role !== 'AGENT') {
+                return res.status(400).json({ message: 'Provided agent ID is invalid or not an agent.' });
+            }
+        }
+
+        const updatedAppointment = await prisma.appointment.update({
+            where: { id: appointmentId },
+            data: {
+                status: 'CONFIRMED',
+                agentId: agentId ? parseInt(agentId) : appointment.agentId, // Assign new agent or keep existing
+            },
+            include: {
+                property: { select: { address: true } },
+                customer: { select: { email: true } },
+                agent: { select: { email: true } }
+            }
+        });
+        res.status(200).json(updatedAppointment);
+    } catch (error) {
+        console.error('Error confirming appointment:', error);
+        res.status(500).json({ message: 'Server error while confirming appointment.' });
+    }
+};
 
 
 
@@ -119,5 +165,6 @@ module.exports = {
     getAllAppointments,
     getMyCustomerAppointments,
     getMyAgentAppointments,
+    confirmAppointment,
    
 };
