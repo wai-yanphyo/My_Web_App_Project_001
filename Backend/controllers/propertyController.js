@@ -72,17 +72,52 @@ const createProperty = async (req, res) => {
 };
 
 
+const updateProperty = async (req, res) => {
+    const { address, price, bedrooms, bathrooms, description, imageUrl } = req.body;
+    const propertyId = parseInt(req.params.id);
+    const userId = 1;  //to change later
 
+    if (isNaN(propertyId)) {
+        return res.status(400).json({ message: 'Invalid property ID format.' });
+    }
 
+    try {
+        const property = await prisma.property.findUnique({
+            where: { id: propertyId },
+        });
 
+        if (!property) {
+            return res.status(404).json({ message: 'Property not found.' });
+        }
 
+        if (property.ownerId !== userId) {
+            return res.status(403).json({ message: 'Not authorized to update this property. You are not the owner.' });
+        }
 
+        const updatedProperty = await prisma.property.update({
+            where: { id: propertyId },
+            data: {
+                address: address !== undefined ? address : property.address,
+                price: price !== undefined ? parseFloat(price) : property.price,
+                bedrooms: bedrooms !== undefined ? parseInt(bedrooms) : property.bedrooms,
+                bathrooms: bathrooms !== undefined ? parseFloat(bathrooms) : property.bathrooms,
+                description: description !== undefined ? description : property.description,
+                imageUrl: imageUrl !== undefined ? imageUrl : property.imageUrl,
+            },
+        });
+        res.status(200).json(updatedProperty);
+    } catch (error) {
+        console.error('Error updating property:', error);
+        res.status(500).json({ message: 'Server error while updating property.' });
+    }
+};
 
 
 module.exports = {
     getProperties,
     getPropertyById,
-    createProperty
+    createProperty,
+    updateProperty
 
     
     
