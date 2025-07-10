@@ -5,6 +5,7 @@ const {
     getMyCustomerAppointments,
     getMyAgentAppointments,
     confirmAppointment,
+    updateAppointmentStatus,
   
 } = require('../controllers/appointmentController');
 
@@ -23,6 +24,10 @@ router.get('/my-agent-appointments',getMyAgentAppointments);
 
 
 router.put('/:id/confirm', confirmAppointment);
+
+
+ router.put('/:id/status', updateAppointmentStatus);
+
 
 
  

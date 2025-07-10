@@ -160,11 +160,74 @@ const confirmAppointment = async (req, res) => {
 
 
 
+
+const updateAppointmentStatus = async (req, res) => {
+    const appointmentId = parseInt(req.params.id);
+    console.log(appointmentId);
+    const { status } = req.body;
+    console.log(status);
+     const userId =3;
+    const userRole ='ADMIN';
+
+
+
+
+
+    if (isNaN(appointmentId) || !status || !Object.values(AppointmentStatus).includes(status)) {
+        return res.status(400).json({ message: 'Invalid appointment ID or status.' });
+    }
+
+    
+
+     try {
+        const appointment = await prisma.appointment.findUnique({
+            where: { id: appointmentId }
+        });
+
+        if (!appointment) {
+            return res.status(404).json({ message: 'Appointment not found.' });
+        }
+
+        if (userRole === 'CUSTOMER') {
+            if (appointment.customerId !== userId || status !== 'CANCELLED') {
+                return res.status(403).json({ message: 'Not authorized to update this appointment status. a' });
+            }
+        } else if (userRole === 'AGENT') {
+            if (appointment.agentId !== userId || status !== 'COMPLETED') {
+                return res.status(403).json({ message: 'Not authorized to update this appointment status. b' });
+            }
+        } else if (userRole !== 'ADMIN') {
+
+            return res.status(403).json({ message: 'Not authorized to update this appointment status. c' });
+        }
+
+
+        const updatedAppointment = await prisma.appointment.update({
+            where: { id: appointmentId },
+            data: { status: status },
+            include: {
+                property: { select: { address: true } },
+                customer: { select: { email: true } },
+                agent: { select: { email: true } }
+            }
+        });
+
+        return res.status(200).json(updatedAppointment);
+
+    } catch (error) {
+        console.error('Error updating appointment status:', error);
+        return res.status(500).json({ message: 'Server error while updating appointment status.' });
+    }
+};
+
+
+
 module.exports = {
     createAppointment,
     getAllAppointments,
     getMyCustomerAppointments,
     getMyAgentAppointments,
     confirmAppointment,
+    updateAppointmentStatus,
    
 };
