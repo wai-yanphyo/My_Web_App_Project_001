@@ -3,6 +3,7 @@ const {
     createAppointment,
     getAllAppointments,
     getMyCustomerAppointments,
+    getMyAgentAppointments,
   
 } = require('../controllers/appointmentController');
 
@@ -14,7 +15,14 @@ router.post('/', createAppointment);
 
 router.get('/', getAllAppointments);
 
+
  router.get('/my-customer-appointments',getMyCustomerAppointments);
+
+router.get('/my-agent-appointments',getMyAgentAppointments);
+
+ 
+
+
 
 
 
