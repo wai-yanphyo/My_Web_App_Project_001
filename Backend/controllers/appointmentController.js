@@ -70,10 +70,31 @@ const getAllAppointments = async (req, res) => {
 };
 
 
+const getMyCustomerAppointments = async (req, res) => {
+     const customerId = 1;
+    
+    try {
+        const appointments = await prisma.appointment.findMany({
+            where: { customerId: customerId },
+            include: {
+                property: { select: { address: true, imageUrl: true } },
+                agent: { select: { email: true } }
+            },
+            orderBy: [{ appointmentDate: 'asc' }]
+        });
+        res.status(200).json(appointments);
+    } catch (error) {
+        console.error('Error fetching customer appointments:', error);
+        res.status(500).json({ message: 'Server error while fetching your appointments.' });
+    }
+};
+
+
 
 
 module.exports = {
     createAppointment,
     getAllAppointments,
+    getMyCustomerAppointments,
    
 };
