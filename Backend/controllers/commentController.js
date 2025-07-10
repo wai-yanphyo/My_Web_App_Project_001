@@ -42,3 +42,9 @@ const createComment = async (req, res) => {
         res.status(500).json({ message: 'Server error while creating comment.' });
     }
 };
+
+module.exports = {
+    createComment,
+
+};
+
