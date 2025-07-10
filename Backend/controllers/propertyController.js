@@ -42,6 +42,35 @@ const getPropertyById = async (req, res) => {
     }
 };
 
+const createProperty = async (req, res) => {
+     console.log('Received request body:', req.body); 
+    const { address, price, bedrooms, bathrooms, description, imageUrl,} = req.body || {};
+    const ownerId = 1;
+    console.log('Received request ownerId:', req.user); 
+
+    if (!address || !price || !bedrooms || !bathrooms) {
+        return res.status(400).json({ message: 'Please provide address, price, bedrooms, and bathrooms.' });
+    }
+
+    try {
+        const newProperty = await prisma.property.create({
+            data: {
+                address,
+                price: parseFloat(price),
+                bedrooms: parseInt(bedrooms),
+                bathrooms: parseFloat(bathrooms),
+                description: description,
+                imageUrl: imageUrl,                      
+                ownerId: ownerId,
+            },
+        });
+        res.status(201).json(newProperty);
+    } catch (error) {
+        console.error('Error creating property:', error);
+        res.status(500).json({ message: 'Server error while creating property.' });
+    }
+};
+
 
 
 
@@ -53,6 +82,7 @@ const getPropertyById = async (req, res) => {
 module.exports = {
     getProperties,
     getPropertyById,
+    createProperty
 
     
     
