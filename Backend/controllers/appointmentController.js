@@ -51,8 +51,29 @@ const createAppointment = async (req, res) => {
 };
 
 
+const getAllAppointments = async (req, res) => {
+    try {
+        const appointments = await prisma.appointment.findMany({
+            include: {
+                property: { select: { address: true, imageUrl: true, ownerId: true } },
+                customer: { select: { email: true } },
+                agent: { select: { email: true } } 
+            },
+            
+            orderBy: [{ appointmentDate: 'asc' }, { status: 'asc' }]
+        });
+        res.status(200).json(appointments);
+    } catch (error) {
+        console.error('Error fetching all appointments:', error);
+        res.status(500).json({ message: 'Server error while fetching appointments.' });
+    }
+};
+
+
+
 
 module.exports = {
     createAppointment,
+    getAllAppointments,
    
 };
