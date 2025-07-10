@@ -4,6 +4,8 @@ const prisma = require('./config/db');
 const propertyRoutes = require('./routes/propertyRoutes');
 const userRoutes = require('./routes/userRoutes');
 const commentRoutes=require('./routes/commentRoutes');
+const appointmentRoutes = require('./routes/appointmentRoutes');
+
 
 
 const app = express();
@@ -17,6 +19,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/properties', propertyRoutes); 
 app.use('/api/users', userRoutes);
 app.use('/api/comments', commentRoutes);
+app.use('/api/appointments', appointmentRoutes);
+
 
 
 
