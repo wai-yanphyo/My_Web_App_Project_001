@@ -20,7 +20,7 @@ router.route('/')
 
 router.route('/:id')
     .get(getPropertyById) 
-    .put( updateProperty)
+    .put(updateProperty)
     .delete(deleteProperty); 
 
 

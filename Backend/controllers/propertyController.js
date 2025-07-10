@@ -44,7 +44,7 @@ const getPropertyById = async (req, res) => {
 
 const createProperty = async (req, res) => {
      console.log('Received request body:', req.body); 
-    const { address, price, bedrooms, bathrooms, description, imageUrl,} = req.body || {};
+    const { address, price, bedrooms, bathrooms, description, imageUrl} = req.body || {};
     const ownerId = 1;
     console.log('Received request ownerId:', req.user); 
 
@@ -75,7 +75,7 @@ const createProperty = async (req, res) => {
 const updateProperty = async (req, res) => {
     const { address, price, bedrooms, bathrooms, description, imageUrl } = req.body;
     const propertyId = parseInt(req.params.id);
-    const userId = 1;  //to change later
+    const userId = req.user;  //to change later
 
     if (isNaN(propertyId)) {
         return res.status(400).json({ message: 'Invalid property ID format.' });
@@ -149,8 +149,6 @@ module.exports = {
     createProperty,
     updateProperty,
     deleteProperty
-    
-
     
     
 };
