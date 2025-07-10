@@ -113,11 +113,43 @@ const updateProperty = async (req, res) => {
 };
 
 
+const deleteProperty = async (req, res) => {
+    const propertyId = parseInt(req.params.id);
+    const userId = req.user;
+    if (isNaN(propertyId)) {
+        return res.status(400).json({ message: 'Invalid property ID format.' });
+    }
+    try {
+        const property = await prisma.property.findUnique({
+            where: { id: propertyId },
+        });
+
+        if (!property) {
+            return res.status(404).json({ message: 'Property not found.' });
+        }
+
+        if (property.ownerId !== userId) {
+            return res.status(403).json({ message: 'Not authorized to delete this property. You are not the owner.' });
+        }
+
+        await prisma.property.delete({
+            where: { id: propertyId },
+        });
+        res.status(200).json({ message: 'Property successfully deleted.' });
+    } catch (error) {
+        console.error('Error deleting property:', error);
+        res.status(500).json({ message: 'Server error while deleting property.' });
+    }
+};
+
+
 module.exports = {
     getProperties,
     getPropertyById,
     createProperty,
-    updateProperty
+    updateProperty,
+    deleteProperty
+    
 
     
     
