@@ -11,11 +11,13 @@ import PropertyCard from '../components/PropertyCard';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchProperties,deleteProperty} from '../api/propertiesApi';
-
+import useAuth from '../hooks/useAuth'; 
 
 const PropertyListPage = () => {
    
     const navigate = useNavigate();
+    const { token } = useAuth();
+
     const [openDialog, setOpenDialog] = useState(false);
     const [dialogTitle, setDialogTitle] = useState('');
     const [dialogMessage, setDialogMessage] = useState('');
@@ -86,7 +88,7 @@ const handleDeleteClick = (id) => {
     
 
  
-    console.log(properties);//to test , remember to delte!
+    console.log(properties.id);//to test , remember to delte!
 
     return (
         
@@ -95,7 +97,7 @@ const handleDeleteClick = (id) => {
                 <Typography variant="h4" component="h1">
                     Available Properties
                 </Typography>
-                { (
+                { token && (
                     <Button
                         variant="contained"
                         startIcon={<AddIcon />}
@@ -121,6 +123,7 @@ const handleDeleteClick = (id) => {
                                 property={property}
                                 onDelete={handleDeleteClick}                              
                                 onEdit={() => "Md"}
+                                isAuthenticated={!!token}
                                 
                             />
                         </Grid>

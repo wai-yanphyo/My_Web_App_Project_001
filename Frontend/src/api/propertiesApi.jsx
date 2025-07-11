@@ -26,6 +26,24 @@ export const deleteProperty = async (id, token) => {
 
 
 
+export const createProperty = async (newProperty, token) => {
+    const response = await fetch(`${API_BASE_URL}/properties`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(newProperty),
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create property');
+    }
+    return response.json();
+};
+
+
+
 
 
 

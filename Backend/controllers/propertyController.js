@@ -45,7 +45,7 @@ const getPropertyById = async (req, res) => {
 const createProperty = async (req, res) => {
      console.log('Received request body:', req.body); 
     const { address, price, bedrooms, bathrooms, description, imageUrl} = req.body || {};
-    const ownerId = 1;
+    const ownerId = req.user;
     console.log('Received request ownerId:', req.user); 
 
     if (!address || !price || !bedrooms || !bathrooms) {
