@@ -10,15 +10,20 @@ const useAuth = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (token) {
-           
-            const storedUserEmail = localStorage.getItem('userEmail');
-            const storedUserId = localStorage.getItem('userId');
-            if (storedUserEmail && storedUserId) {
-                setUser({ id: parseInt(storedUserId), email: storedUserEmail });
-            }
-        }
-    }, [token]);
+    if (token) {
+      const storedUserEmail = localStorage.getItem('userEmail');
+      const storedUserId = localStorage.getItem('userId');
+      const storedUserRole = localStorage.getItem('userRole');
+
+      if (storedUserEmail && storedUserId && storedUserRole) {
+        setUser({
+          id: parseInt(storedUserId),
+          email: storedUserEmail,
+          role: storedUserRole,
+        });
+      }
+    }
+  }, [token]);
 
     
     const handleLogin = async (credentials) => {
@@ -26,9 +31,11 @@ const useAuth = () => {
             const data = await loginUser(credentials);
             localStorage.setItem('token', data.token);
             localStorage.setItem('userEmail', data.email);
-            localStorage.setItem('userId', data.id); 
+            localStorage.setItem('userId', data.id);
+            localStorage.setItem('userRole', data.role);
+ 
             setToken(data.token);
-            setUser({ id: data.id, email: data.email });
+            setUser({ id: data.id, email: data.email,role: data.role });
             navigate('/');
         } catch (error) {
             throw error; 
@@ -43,9 +50,14 @@ const useAuth = () => {
             localStorage.setItem('token', data.token);
             localStorage.setItem('userEmail', data.email);
             localStorage.setItem('userId', data.id); 
-            setUser({ id: data.id, email: data.email });
+            localStorage.setItem('userRole', data.role);
+
+            setToken(data.token);
+            setUser({ id: data.id, email: data.email,role: data.role });
             navigate('/');
         } catch (error) {
+            throw error;
+
         }
     };
 

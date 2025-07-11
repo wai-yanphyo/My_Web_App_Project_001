@@ -45,7 +45,7 @@ const getPropertyById = async (req, res) => {
 const createProperty = async (req, res) => {
      console.log('Received request body:', req.body); 
     const { address, price, bedrooms, bathrooms, description, imageUrl} = req.body || {};
-    const ownerId = req.user;
+    const ownerId = req.user.id;
     console.log('Received request ownerId:', req.user); 
 
     if (!address || !price || !bedrooms || !bathrooms) {
@@ -55,7 +55,7 @@ const createProperty = async (req, res) => {
     try {
         const newProperty = await prisma.property.create({
             data: {
-                address,
+                address:address,
                 price: parseFloat(price),
                 bedrooms: parseInt(bedrooms),
                 bathrooms: parseFloat(bathrooms),
@@ -75,7 +75,7 @@ const createProperty = async (req, res) => {
 const updateProperty = async (req, res) => {
     const { address, price, bedrooms, bathrooms, description, imageUrl } = req.body;
     const propertyId = parseInt(req.params.id);
-    const userId = req.user;  //to change later
+    const userId = req.user.id;  //to change later
 
     if (isNaN(propertyId)) {
         return res.status(400).json({ message: 'Invalid property ID format.' });

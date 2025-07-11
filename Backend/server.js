@@ -18,6 +18,8 @@ app.use(express.json());
 
 
 app.use(express.urlencoded({ extended: true }));
+app.use('/api', authRoutes); // Auth routes (e.g., /api/register, /api/login)
+
 app.use('/api/properties', propertyRoutes); 
 app.use('/api/users', userRoutes);
 app.use('/api/comments', commentRoutes);

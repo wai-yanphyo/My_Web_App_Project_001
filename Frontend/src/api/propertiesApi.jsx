@@ -43,6 +43,63 @@ export const createProperty = async (newProperty, token) => {
 };
 
 
+export const updateProperty = async (id, updatedProperty, token) => {
+    console.log("Token in updateProperty:", token);
+
+    const response = await fetch(`${API_BASE_URL}/properties/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedProperty),
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update property');
+    }
+    return response.json();
+};
+
+export const fetchPropertyById = async (id, token = null) => {
+    if (!id) {
+        throw new Error('Property ID is required to fetch a single property.');
+    }
+
+    const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+    };
+
+    
+    // if (token) {
+    //     // headers['Authorization'] = `Bearer ${token}`;
+    //     headers['Authorization'] = `Bearer ${token}`;
+    // }
+
+    try {
+        console.log(`Attempting to fetch property with ID: ${id}`);
+        const response = await fetch(`${API_BASE_URL}/properties/${id}`, {
+            method: 'GET',
+            headers: headers, 
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ message: 'No additional error info.' }));
+            const errorMessage = errorData.message || `Failed to fetch property: ${response.status} ${response.statusText}`;
+            console.error(`Error fetching property ${id}:`, errorMessage);
+            throw new Error(errorMessage);
+        }
+
+        const data = await response.json();
+        console.log(`Successfully fetched property ${id}:`, data);
+        return data;
+
+    } catch (error) {
+        console.error(`Network or parsing error for property ${id}:`, error);
+        throw error; 
+    }
+};
 
 
 

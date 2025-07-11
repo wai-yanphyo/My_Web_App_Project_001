@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { createProperty } from '../api/propertiesApi';
+import { createProperty,updateProperty,fetchPropertyById } from '../api/propertiesApi';
 import useAuth from '../hooks/useAuth';
 
 
@@ -28,6 +28,35 @@ const PropertyFormPage = () => {
 
 
 
+
+
+
+ const { data: property, isLoading: isPropertyLoading, isError: isPropertyError } = useQuery({
+        queryKey: ['property', id],
+        queryFn: () => fetchPropertyById(id, token),
+        enabled: !!id,
+        
+    });
+
+//to see old values in the edit forms------------
+useEffect(() => {
+        console.log("useEffect triggered. Current property data:", property);
+        if (id && property) {
+            console.log("Populating form with property data:", property); 
+            setFormValues({
+                address: property.address || '',
+                price: (property.price !== null && property.price !== undefined) ? property.price.toString() : '',
+                bedrooms: (property.bedrooms !== null && property.bedrooms !== undefined) ? property.bedrooms.toString() : '',
+                bathrooms: (property.bathrooms !== null && property.bathrooms !== undefined) ? property.bathrooms.toString() : '',
+                description: property.description || '',
+                imageUrl: property.imageUrl || '',
+            });
+        }
+    }, [id, property]);
+//------------------------------------------------
+
+
+
 //----------------Create to Api----------
      const createMutation = useMutation({
         mutationFn: (newProperty) => createProperty(newProperty, token),
@@ -42,7 +71,22 @@ const PropertyFormPage = () => {
     });
 //-----------------------------------------------
 
+//---------------For Update to Api------------
+ const updateMutation = useMutation({
+        mutationFn: (updatedPropertyData) => updateProperty(id, updatedPropertyData, token),
+        onSuccess: () => {
+            queryClient.invalidateQueries(['properties']); 
+            queryClient.invalidateQueries(['property', id]);
+            setSnackbar({ open: true, message: 'Property updated successfully!', severity: 'success' });
+            setTimeout(() => navigate('/'), 1500);
+        },
+        onError: (err) => {
+            setSnackbar({ open: true, message: `Error updating property: ${err.message}`, severity: 'error' });
+        },
+    });
 
+
+//------------------------------
 
  const handleChange = (e) => {
         const { name, value } = e.target;
@@ -56,11 +100,21 @@ const PropertyFormPage = () => {
             setSnackbar({ open: true, message: 'You must be logged in to add/edit properties.', severity: 'warning' });
             return;
         }
+        if (id) {
+            updateMutation.mutate(formValues);
+        }
         else {
             createMutation.mutate(formValues);
         }
     };
 
+    if (id && isPropertyLoading) {
+        return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}><CircularProgress /></Box>;
+    }
+
+    if (id && isPropertyError) {
+        return <Alert severity="error">Error loading property for editing. Please try again.</Alert>;
+    }
 
 
     return (
@@ -132,8 +186,10 @@ const PropertyFormPage = () => {
                     variant="contained"
                     color="primary"
                     sx={{ mt: 2, p: 1.5, textTransform: 'none' }}
+                disabled={createMutation.isLoading || updateMutation.isLoading}
+
                     >
-                    {(createMutation.isLoading) ? <CircularProgress size={24} /> : ('Add Property')}
+                    {(createMutation.isLoading || updateMutation.isLoading) ? <CircularProgress size={24} /> : (id ? 'Update Property' : 'Add Property')}
                 </Button>
                 <Button
                     variant="outlined"

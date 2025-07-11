@@ -122,7 +122,7 @@ const handleDeleteClick = (id) => {
                             <PropertyCard
                                 property={property}
                                 onDelete={handleDeleteClick}                              
-                                onEdit={() => "Md"}
+                                onEdit={() => navigate(`/properties/edit/${property.id}`)}
                                 isAuthenticated={!!token}
                                 
                             />
