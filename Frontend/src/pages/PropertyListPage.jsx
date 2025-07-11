@@ -9,6 +9,9 @@ import { useNavigate } from 'react-router-dom';
 
 import PropertyCard from '../components/PropertyCard'; 
 
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { fetchProperties} from '../api/propertiesApi';
+
 
 const PropertyListPage = () => {
    
@@ -17,8 +20,17 @@ const PropertyListPage = () => {
     const [dialogTitle, setDialogTitle] = useState('');
     const [dialogMessage, setDialogMessage] = useState('');
     const [propertyToDeleteId, setPropertyToDeleteId] = useState(null);
+    const queryClient = useQueryClient();
 
-  
+
+
+     const { data: properties=[], isLoading, isError, error } = useQuery({
+        queryKey: ['properties'],
+        queryFn: fetchProperties,
+    });
+
+
+
 
   
 
@@ -27,9 +39,10 @@ const PropertyListPage = () => {
     
 
  
-    
+    console.log(properties);
 
     return (
+        
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                 <Typography variant="h4" component="h1">
@@ -46,35 +59,30 @@ const PropertyListPage = () => {
                     </Button>
                 )}
             </Box>
-            <Grid container spacing={3}>
-               
-                   
-                            <PropertyCard
-                                property={"Testing"}
-                                onDelete={'dd'}                   
-                                onEdit={() => {}}  
-                            />
-                            <PropertyCard
-                                property={"Testing"}
-                                onDelete={'dd'}            
-                                onEdit={() => {}}
-                            />
-                            <PropertyCard
-                                property={"Testing"}
-                                onDelete={'dd'}                             
-                                onEdit={() => {}}
-                            />
-                            <PropertyCard
-                                property={"Testing"}
-                                onDelete={'dd'}                             
-                                onEdit={() => {}}
-                            />
-                    
-                    
-                
-
             
+            <Grid container spacing={3}>
+                {properties.length === 0 ? (
+                    <Grid item xs={12}>
+                        <Typography variant="h6" color="text.secondary" align="center">
+                            No properties available.
+                        </Typography>
+                    </Grid>
+                ):(
+                    properties.map((property) => (
+                        <Grid item xs={12} key={property.id}>
+                            <PropertyCard
+                                property={property}
+                                onDelete={''}                              
+                                onEdit={() => "Md"}
+                            />
+                        </Grid>
+                    ))
+                )
+
+            }
             </Grid>
+
+
 
                 {/* <PropertyCard
             property={{
