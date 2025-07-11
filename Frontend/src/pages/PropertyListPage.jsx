@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import PropertyCard from '../components/PropertyCard'; 
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchProperties} from '../api/propertiesApi';
+import { fetchProperties,deleteProperty} from '../api/propertiesApi';
 
 
 const PropertyListPage = () => {
@@ -22,14 +22,31 @@ const PropertyListPage = () => {
     const [propertyToDeleteId, setPropertyToDeleteId] = useState(null);
     const queryClient = useQueryClient();
 
-
-
+//-------------------------Select------------------
      const { data: properties=[], isLoading, isError, error } = useQuery({
         queryKey: ['properties'],
         queryFn: fetchProperties,
     });
+//---------------------------------------------------
 
 
+//----------------------Delete---------------------
+const deleteMutation = useMutation({
+        mutationFn: (id) => deleteProperty(id, token),
+        onSuccess: () => {
+            queryClient.invalidateQueries(['properties']); 
+            setDialogTitle('Success');
+            setDialogMessage('Property deleted successfully!');
+            setOpenDialog(true);
+            setPropertyToDeleteId(null); 
+        },
+        onError: (err) => {
+            setDialogTitle('Error');
+            setDialogMessage(`Error deleting property: ${err.message}`);
+            setOpenDialog(true);
+        },
+    });
+//-----------------------------------------------------
 
 
   
@@ -72,8 +89,9 @@ const PropertyListPage = () => {
                         <Grid item xs={12} key={property.id}>
                             <PropertyCard
                                 property={property}
-                                onDelete={''}                              
+                                onDelete={deleteMutation}                              
                                 onEdit={() => "Md"}
+                                
                             />
                         </Grid>
                     ))

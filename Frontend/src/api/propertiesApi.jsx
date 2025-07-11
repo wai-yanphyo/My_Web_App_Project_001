@@ -7,3 +7,26 @@ export const fetchProperties = async () => {
     }
     return response.json();
 };
+
+
+
+export const deleteProperty = async (id, token) => {
+    const response = await fetch(`${API_BASE_URL}/properties/${id}`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        },
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to delete property');
+    }
+    return response.json();
+};
+
+
+
+
+
+
+

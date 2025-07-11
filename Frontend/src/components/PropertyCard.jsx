@@ -43,7 +43,7 @@ const PropertyCard = ({ property, onDelete, onEdit, isAuthenticated }) => {
                     </Button>
                     </Box>
                 </CardContent>
-                {isAuthenticated && (
+                     
                     <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1, justifyContent: 'flex-end' }}>
                         <IconButton aria-label="edit" onClick={() => onEdit(property.id)}>
                             <EditIcon />
@@ -52,7 +52,8 @@ const PropertyCard = ({ property, onDelete, onEdit, isAuthenticated }) => {
                             <DeleteIcon />
                         </IconButton>
                     </Box>
-                )}
+                
+                
             </Box>
         </Card>
     );
