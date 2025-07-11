@@ -49,6 +49,36 @@ const deleteMutation = useMutation({
 //-----------------------------------------------------
 
 
+//------------HandleDeleleteClick in Delete Button-----------------
+const handleDeleteClick = (id) => {
+        setPropertyToDeleteId(id);
+        setDialogTitle('Confirm Deletion');
+        setDialogMessage('Are you sure you want to delete this property? This action cannot be undone.');
+        setOpenDialog(true);
+    };
+//------------------------------------------------
+
+
+//--------------Confirm Delete Button-------------
+ const confirmDelete = () => {
+        if (propertyToDeleteId) {
+            deleteMutation.mutate(propertyToDeleteId);
+            setOpenDialog(false);
+        }
+    };
+//------------------------------------------------
+
+
+//-------------handleClosebutton for Dialog--------------------
+ const handleDialogClose = () => {
+        setOpenDialog(false);
+        setPropertyToDeleteId(null);
+
+    };
+//---------------------------------------------------
+
+
+
   
 
   
@@ -56,7 +86,7 @@ const deleteMutation = useMutation({
     
 
  
-    console.log(properties);
+    console.log(properties);//to test , remember to delte!
 
     return (
         
@@ -89,7 +119,7 @@ const deleteMutation = useMutation({
                         <Grid item xs={12} key={property.id}>
                             <PropertyCard
                                 property={property}
-                                onDelete={deleteMutation}                              
+                                onDelete={handleDeleteClick}                              
                                 onEdit={() => "Md"}
                                 
                             />
@@ -100,26 +130,36 @@ const deleteMutation = useMutation({
             }
             </Grid>
 
+            <Dialog open={openDialog} onClose={handleDialogClose}>
+                <DialogTitle>{dialogTitle}</DialogTitle>
+                <DialogContent>
+                    <Typography>{dialogMessage}</Typography>
+                </DialogContent>
+                <DialogActions>
+                    
+                    {propertyToDeleteId !== null ? (
+                        <>
+                            <Button onClick={handleDialogClose} color="primary">
+                                Cancel
+                            </Button>
+                            <Button onClick={confirmDelete} color="error" variant="contained">
+                                Confirm
+                            </Button>
+                        </>
+                    ) : (
+                        
+                        <Button onClick={handleDialogClose} color="primary" autoFocus>
+                            Close
+                        </Button>
+                    )}
+                </DialogActions>
+            </Dialog>
 
-
-                {/* <PropertyCard
-            property={{
-                id: 'static-1', // A unique ID for this static card
-                address: '123 Test Street',
-                price: 250000.00,
-                bedrooms: 3,
-                bathrooms: 2.5,
-                description: 'A lovely static test property.',
-                imageUrl: 'https://via.placeholder.com/600x400?text=Static+Property',
-                // Add any other properties your PropertyCard component expects
-            }}
-            onDelete={() => console.log('Static delete clicked!')}
-            onEdit={() => console.log('Static edit clicked!')}
-            isAuthenticated={true} // Or false, depending on your test case
-        /> */}
+        
+              
             
 
-            {/* General purpose Dialog for Confirmation/Messages */}
+           
             
         </Container>
     );
