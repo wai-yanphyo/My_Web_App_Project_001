@@ -74,6 +74,7 @@ const LoginPage = () => {
                 <Button
                     variant="text"
                     component={Link} 
+                    to="/register"
                     sx={{ textTransform: 'none' }}
                 >
                     Don't have an account? Register
