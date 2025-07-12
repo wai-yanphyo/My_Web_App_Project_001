@@ -21,9 +21,11 @@ export const createAppointment = async (appointmentData, token) => {
 
 export const fetchMyCustomerAppointments = async (token) => {
     const response = await fetch(`${API_BASE_URL}/appointments/my-customer-appointments`, {
-        headers: {
-            'Authorization': `Bearer ${token}`,
+       headers: {
+            'Content-Type': 'application/json',
+            //'Authorization': `Bearer ${token}`,
         },
+        body: JSON.stringify(appointmentData),
     });
     if (!response.ok) {
         const errorData = await response.json();
@@ -35,9 +37,11 @@ export const fetchMyCustomerAppointments = async (token) => {
 
 export const fetchMyAgentAppointments = async (token) => {
     const response = await fetch(`${API_BASE_URL}/appointments/my-agent-appointments`, {
-        headers: {
+       headers: {
+            'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
         },
+        body: JSON.stringify(appointmentData),
     });
     if (!response.ok) {
         const errorData = await response.json();

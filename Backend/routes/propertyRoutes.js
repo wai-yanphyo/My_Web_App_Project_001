@@ -13,7 +13,7 @@ const {
 
 
 const router = express.Router();
-const { protect } = require('../middleware/authMiddleware'); // Import protect middleware
+const { protect } = require('../middleware/authMiddleware');
 
 router.route('/')
     .get(getProperties)     // Public

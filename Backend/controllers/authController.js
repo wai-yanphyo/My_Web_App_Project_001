@@ -41,7 +41,7 @@ const registerUser = async (req, res) => {
         res.status(201).json({
             id: user.id,
             email: user.email,
-            token: generateToken(user.id),
+            token: generateToken(user),
         });
     } catch (error) {
         console.error('Registration error:', error);
@@ -64,7 +64,7 @@ const loginUser = async (req, res) => {
             res.json({
                 id: user.id,
                 email: user.email,
-                token: generateToken(user.id),
+                token: generateToken(user),
             });
         } else {
             res.status(400).json({ message: 'Invalid credentials. Please check your email and password.' });

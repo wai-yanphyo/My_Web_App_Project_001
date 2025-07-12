@@ -71,7 +71,8 @@ const getAllAppointments = async (req, res) => {
 
 
 const getMyCustomerAppointments = async (req, res) => {
-     const customerId = 1;
+     //const customerId = req.user.id;
+     const cutomerId=2;
     
     try {
         const appointments = await prisma.appointment.findMany({
@@ -92,7 +93,7 @@ const getMyCustomerAppointments = async (req, res) => {
 
 
 const getMyAgentAppointments = async (req, res) => {
-    const agentId = 1;
+    const agentId = 2;
    
     try {
         const appointments = await prisma.appointment.findMany({
