@@ -49,3 +49,34 @@ export const fetchMyAgentAppointments = async (token) => {
     }
     return response.json();
 };
+
+export const fetchAllAppointments = async (token) => {
+    const response = await fetch(`${API_BASE_URL}/appointments`, {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to fetch all appointments');
+    }
+    return response.json();
+};
+
+
+export const confirmAppointment = async (id, agentId, token) => {
+    const response = await fetch(`${API_BASE_URL}/appointments/${id}/confirm`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ agentId }),
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to confirm appointment');
+    }
+    return response.json();
+};

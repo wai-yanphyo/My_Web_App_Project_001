@@ -6,7 +6,7 @@ import PropertyListPage from './pages/PropertyListPage';
  import RegisterPage from './pages/RegisterPage';
  import PropertyDetailPage from './pages/PropertyDetailPage';
   import MyAppointmentsPage from './pages/MyAppointmentsPage';
-
+import AdminDashboardPage from "./pages/AdminDashboardPage";
 
 //import { useState, createContext } from "react"
 import { useState, createContext, useContext, useMemo } from "react";
@@ -71,11 +71,16 @@ const router=createBrowserRouter([
             {
                 path:"/properties/myappointmentspage",
                 element:<MyAppointmentsPage />,
+            },
+            {
+                path:"/admindashboard",
+                element:<AdminDashboardPage />,
             }
-
         ],
-
     },
+            
+            
+        
  ]);
 
 // ===================Router===============

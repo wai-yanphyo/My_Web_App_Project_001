@@ -1,0 +1,260 @@
+import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+    Container, Box, Typography, CircularProgress, Alert, Paper, Tabs, Tab,
+    Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Button,
+    MenuItem, Select, FormControl, InputLabel,Grid
+} from '@mui/material';
+import { Delete as DeleteIcon, Edit as EditIcon, CheckCircle as CheckCircleIcon, Assignment as AssignmentIcon, Cancel as CancelIcon, CalendarMonth as CalendarMonthIcon } from '@mui/icons-material';
+import { format } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
+
+import useAuth from '../hooks/useAuth';
+import { fetchProperties, deleteProperty } from '../api/propertiesApi';
+import ConfirmationDialog from '../components/ConfirmationDialog';
+
+
+
+
+const AdminDashboardPage = () => {
+    const navigate = useNavigate();
+    
+    const { user, token } = useAuth();
+    
+
+    const queryClient = useQueryClient();
+
+    const [currentTab, setCurrentTab] = useState(0);
+    const [dialogInfo, setDialogInfo] = useState({ open: false, title: '', message: '', type: 'info', confirmAction: null });
+    const [tempAppointmentId, setTempAppointmentId] = useState(null);
+    const [selectedAgent, setSelectedAgent] = useState('');
+   
+
+console.log(user?.role);
+useEffect(() => {
+    
+    if (user && user?.role !== 'ADMIN') {
+      setDialogInfo({
+        open: true,
+        title: 'Access Denied',
+        message: 'You are not authorized to view the admin dashboard.',
+        type: 'error',
+      });
+
+      setTimeout(() => navigate('/'), 1500);
+    }
+  }, [user, navigate]);
+   
+
+    const handleTabChange = (event, newValue) => {
+        setCurrentTab(newValue);
+        console.log(newValue);
+    };
+
+    // --- Data Queries ---
+    const { data: properties, isLoading: isLoadingProperties, isError: isErrorProperties, error: errorProperties } = useQuery({
+        queryKey: ['properties'],
+        queryFn: fetchProperties,
+        enabled: user?.role === 'ADMIN' && currentTab === 0, // Only fetch if admin and this tab is active
+    });
+
+      const { data: users, isLoading: isLoadingUsers, isError: isErrorUsers, error: errorUsers } = useQuery({
+        queryKey: ['users'],
+        queryFn: () => fetchAllUsers(token),
+        enabled: user?.role === 'ADMIN' && currentTab === 1, // Only fetch if admin and this tab is active
+    });
+
+    //------------------------------------
+
+    //------------------Mutatiom---------------------
+   
+    const deletePropertyMutation = useMutation({
+        mutationFn: (id) => deleteProperty(id, token),
+        onSuccess: () => {
+            queryClient.invalidateQueries(['properties']);
+            setDialogInfo({ open: true, title: 'Success', message: 'Property deleted successfully.', type: 'success', confirmAction: null });
+        },
+        onError: (err) => {
+            setDialogInfo({ open: true, title: 'Error', message: `Error deleting property: ${err.message}`, type: 'error', confirmAction: null });
+        },
+    });
+
+    //--------------------------------------
+
+
+  
+
+    
+
+   
+
+    // --- Handlers for Delete Property---
+    const handleDeleteProperty = (id) => {
+        setDialogInfo({
+            open: true,
+            title: 'Confirm Deletion',
+            message: 'Are you sure you want to delete this property?',
+            type: 'confirm',
+            confirmAction: () => deletePropertyMutation.mutate(id),
+        });
+    };
+
+
+    //------------------------------------------------
+   
+    const availableAgents = users?.filter(u => u.role === 'AGENT') || [];
+
+    const renderTabContent = () => {
+        if (!user || user.role !== 'ADMIN') {
+            return null; 
+        }
+
+        switch (currentTab) {
+            case 0: // Properties
+                if (isLoadingProperties) return <CircularProgress />;
+                if (isErrorProperties) return <Alert severity="error">Error loading properties: {errorProperties.message}</Alert>;
+                return (
+                    <TableContainer component={Paper}>
+                        <Table size="small">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>ID</TableCell>
+                                    <TableCell>Address</TableCell>
+                                    <TableCell>Price</TableCell>
+                                    <TableCell>Bedrooms</TableCell>
+                                    <TableCell>Bathrooms</TableCell>
+                                    <TableCell>Owner Email</TableCell>
+                                    <TableCell>Actions</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {!Array.isArray(properties) ||properties.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={7} align="center">No properties found.</TableCell>
+                                    </TableRow>
+                                ) : (
+                                    properties.map((property) => (
+                                        <TableRow key={property.id}>
+                                            <TableCell>{property.id}</TableCell>
+                                            <TableCell>{property.address}</TableCell>
+                                            <TableCell>${property.price.toLocaleString()}</TableCell>
+                                            <TableCell>{property.bedrooms}</TableCell>
+                                            <TableCell>{property.bathrooms}</TableCell>
+                                            <TableCell>{property.owner?.email || 'N/A'}</TableCell>
+                                            <TableCell>
+                                                {/* Admin can edit any property, but we navigate to standard form */}
+                                                <IconButton size="small" onClick={() => navigate(`/properties/edit/${property.id}`)}>
+                                                    <EditIcon />
+                                                </IconButton>
+                                                <IconButton size="small" onClick={() => handleDeleteProperty(property.id)}>
+                                                    <DeleteIcon />
+                                                </IconButton>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                );
+            
+                if (isLoadingAppointments) return <CircularProgress />;
+                if (isErrorAppointments) return <Alert severity="error">Error loading appointments: {errorAppointments.message}</Alert>;
+                return (
+                    <TableContainer component={Paper}>
+                        <Table size="small">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>ID</TableCell>
+                                    <TableCell>Property</TableCell>
+                                    <TableCell>Customer</TableCell>
+                                    <TableCell>Agent</TableCell>
+                                    <TableCell>Date</TableCell>
+                                    <TableCell>Status</TableCell>
+                                    <TableCell>Actions</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {appointments.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={7} align="center">No appointments found.</TableCell>
+                                    </TableRow>
+                                ) : (
+                                    appointments.map((appointment) => (
+                                        <TableRow key={appointment.id}>
+                                            <TableCell>{appointment.id}</TableCell>
+                                            <TableCell>{appointment.property.address}</TableCell>
+                                            <TableCell>{appointment.customer.email}</TableCell>
+                                            <TableCell>{appointment.agent?.email || 'Not Assigned'}</TableCell>
+                                            <TableCell>{format(new Date(appointment.appointmentDate), 'PPP p')}</TableCell>
+                                            <TableCell>{statusLabels[appointment.status]}</TableCell>
+                                            <TableCell>
+                                                {appointment.status === 'PENDING' && (
+                                                    <IconButton size="small" color="primary" onClick={() => handleConfirmAppointment(appointment.id)}>
+                                                        <CheckCircleIcon /> {/* Confirm / Assign */}
+                                                    </IconButton>
+                                                )}
+                                                {appointment.status === 'CONFIRMED' && (
+                                                    <IconButton size="small" color="success" onClick={() => handleUpdateAppointmentStatus(appointment.id, 'COMPLETED')}>
+                                                        <CalendarMonthIcon /> {/* Mark Completed */}
+                                                    </IconButton>
+                                                )}
+                                                {appointment.status !== 'CANCELLED' && (
+                                                    <IconButton size="small" color="error" onClick={() => handleUpdateAppointmentStatus(appointment.id, 'CANCELLED')}>
+                                                        <CancelIcon /> {/* Cancel */}
+                                                    </IconButton>
+                                                )}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                );
+            default:
+                return null;
+        }
+    };
+
+   
+    
+
+
+    return (
+        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            <Typography variant="h4" component="h1" gutterBottom align="center">
+                Admin Dashboard
+            </Typography>
+            <Paper sx={{ width: '150%', mb: 2 }}>
+                <Tabs value={currentTab} onChange={handleTabChange} aria-label="admin dashboard tabs" centered>
+                    <Tab label="Propertie" />
+                   
+                </Tabs>
+            </Paper>
+            <Box sx={{ width: '150%',p: 3, border: '1px solid #e0e0e0', borderRadius: 2 }}>
+              
+               
+                <Grid item xs={12} md={8}>
+                    {renderTabContent()}
+                </Grid>
+            </Box>
+
+          
+            <ConfirmationDialog
+                open={dialogInfo.open}
+                onClose={() => setDialogInfo({ ...dialogInfo, open: false, confirmAction: null })}
+                onConfirm={dialogInfo.type === 'confirm' ? dialogInfo.confirmAction : (dialogInfo.type === 'custom_confirm_appointment' ? handleCustomConfirmAppointmentAction : () => setDialogInfo({ ...dialogInfo, open: false }))}
+                title={dialogInfo.title}
+                message={dialogInfo.message}
+                confirmText={dialogInfo.type === 'confirm' ? 'Yes, proceed' : (dialogInfo.type === 'custom_confirm_appointment' ? 'Confirm & Assign' : 'Ok')}
+                cancelText={dialogInfo.type === 'confirm' || dialogInfo.type === 'custom_confirm_appointment' ? 'Cancel' : undefined}
+                confirmColor={dialogInfo.type === 'error' ? 'error' : (dialogInfo.type === 'warning' ? 'warning' : 'primary')}
+            >
+                {dialogInfo.type === 'custom_confirm_appointment' && renderCustomConfirmAppointmentDialogContent()}
+            </ConfirmationDialog>
+        </Container>
+    );
+};
+
+export default AdminDashboardPage;

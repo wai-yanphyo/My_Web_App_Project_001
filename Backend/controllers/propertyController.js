@@ -76,6 +76,7 @@ const updateProperty = async (req, res) => {
     const { address, price, bedrooms, bathrooms, description, imageUrl } = req.body;
     const propertyId = parseInt(req.params.id);
     const userId = req.user.id;  //to change later
+//const userId = req.user;  //to change later
 
     if (isNaN(propertyId)) {
         return res.status(400).json({ message: 'Invalid property ID format.' });
