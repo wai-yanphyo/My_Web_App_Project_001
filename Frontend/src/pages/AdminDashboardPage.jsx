@@ -12,7 +12,9 @@ import { useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import { fetchProperties, deleteProperty } from '../api/propertiesApi';
 import { fetchAllUsers, updateUserRole } from '../api/userApi';
+import { confirmAppointment,fetchAllAppointments} from '../api/appointmentApi';
 import ConfirmationDialog from '../components/ConfirmationDialog';
+
 
 
 
@@ -69,13 +71,20 @@ useEffect(() => {
     const { data: properties, isLoading: isLoadingProperties, isError: isErrorProperties, error: errorProperties } = useQuery({
         queryKey: ['properties'],
         queryFn: fetchProperties,
-        enabled: user?.role === 'ADMIN' && currentTab === 0, // Only fetch if admin and this tab is active
+        enabled: user?.role === 'ADMIN' && currentTab === 0,  //For Properties
     });
 
       const { data: users, isLoading: isLoadingUsers, isError: isErrorUsers, error: errorUsers } = useQuery({
         queryKey: ['users'],
         queryFn: () => fetchAllUsers(token),
-        enabled: user?.role === 'ADMIN' && currentTab === 1, // Only fetch if admin and this tab is active
+        enabled: user?.role === 'ADMIN' && currentTab === 1,  //For Users
+    });
+
+
+    const { data: appointments, isLoading: isLoadingAppointments, isError: isErrorAppointments, error: errorAppointments } = useQuery({
+        queryKey: ['appointments'],
+        queryFn: () => fetchAllAppointments(token),
+        enabled: user?.role === 'ADMIN' && currentTab === 2,   //For Appointments
     });
 
     //------------------------------------
@@ -102,6 +111,20 @@ useEffect(() => {
         },
         onError: (err) => {
             setDialogInfo({ open: true, title: 'Error', message: `Error updating user role: ${err.message}`, type: 'error', confirmAction: null });
+        },
+    });
+
+
+     const confirmAppointmentMutation = useMutation({
+        mutationFn: ({ id, agentId }) => confirmAppointment(id, agentId, token),
+        onSuccess: () => {
+            queryClient.invalidateQueries(['appointments']);
+            setDialogInfo({ open: true, title: 'Success', message: 'Appointment confirmed and assigned.', type: 'success', confirmAction: null });
+            setTempAppointmentId(null);
+            setSelectedAgent('');
+        },
+        onError: (err) => {
+            setDialogInfo({ open: true, title: 'Error', message: `Error confirming appointment: ${err.message}`, type: 'error', confirmAction: null });
         },
     });
 
@@ -146,6 +169,19 @@ const handleChangeUserRole = (userId, newRole) => {
             message: `Are you sure you want to change this user's role to ${roleLabels[newRole]}?`,
             type: 'confirm',
             confirmAction: () => updateUserRoleMutation.mutate({ id: userId, role: newRole }),
+        });
+    };
+
+
+const handleConfirmAppointment = (appointmentId) => {
+        setTempAppointmentId(appointmentId);
+        setSelectedAgent(''); 
+        setDialogInfo({
+            open: true,
+            title: 'Confirm Appointment & Assign Agent',
+            message: 'Confirm this appointment and optionally assign an agent:',
+            type: 'custom_confirm_appointment', 
+            confirmAction: null, 
         });
     };
 
@@ -264,7 +300,7 @@ const handleChangeUserRole = (userId, newRole) => {
                         </Table>
                     </TableContainer>
                 );
-             case 1: // Users
+            case 1: // Users
                 if (isLoadingUsers) return <CircularProgress />;
                 if (isErrorUsers) return <Alert severity="error">Error loading users: {errorUsers.message}</Alert>;
                 return (
@@ -311,14 +347,75 @@ const handleChangeUserRole = (userId, newRole) => {
                         </Table>
                     </TableContainer>
                 );
+            case 2: // Appointments
+                if (isLoadingAppointments) return <CircularProgress />;
+                if (isErrorAppointments) return <Alert severity="error">Error loading appointments: {errorAppointments.message}</Alert>;
+                return (
+                    <TableContainer component={Paper}>
+                        <Table size="small">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>ID</TableCell>
+                                    <TableCell>Property</TableCell>
+                                    <TableCell>Customer</TableCell>
+                                    <TableCell>Agent</TableCell>
+                                    <TableCell>Date</TableCell>
+                                    <TableCell>Status</TableCell>
+                                    <TableCell>Actions</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {appointments.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={7} align="center">No appointments found.</TableCell>
+                                    </TableRow>
+                                ) : (
+                                    appointments.map((appointment) => (
+                                        <TableRow key={appointment.id}>
+                                            <TableCell>{appointment.id}</TableCell>
+                                            <TableCell>{appointment.property.address}</TableCell>
+                                            <TableCell>{appointment.customer.email}</TableCell>
+                                            <TableCell>{appointment.agent?.email || 'Not Assigned'}</TableCell>
+                                            <TableCell>{format(new Date(appointment.appointmentDate), 'PPP p')}</TableCell>
+                                            <TableCell>{statusLabels[appointment.status]}</TableCell>
+                                            <TableCell>
+                                                {appointment.status === 'PENDING' && (
+                                                    <IconButton size="small" color="primary" onClick={() => handleConfirmAppointment(appointment.id)}>
+                                                        <CheckCircleIcon />
+                                                    </IconButton>
+                                                )}
+                                                {appointment.status === 'CONFIRMED' && (
+                                                    <IconButton size="small" color="success" onClick={() => handleUpdateAppointmentStatus(appointment.id, 'COMPLETED')}>
+                                                        <CalendarMonthIcon /> 
+                                                    </IconButton>
+                                                )}
+                                                {appointment.status !== 'CANCELLED' && (
+                                                    <IconButton size="small" color="error" onClick={() => handleUpdateAppointmentStatus(appointment.id, 'CANCELLED')}>
+                                                        <CancelIcon /> 
+                                                    </IconButton>
+                                                )}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                );
                 default:
                 return null;
         }
     };
 
    
-    
-
+// -------------------To acept requestiing appointment----------------
+ const handleCustomConfirmAppointmentAction = () => {
+        if (tempAppointmentId) {
+            confirmAppointmentMutation.mutate({ id: tempAppointmentId, agentId: selectedAgent || null });
+        }
+        setDialogInfo({ ...dialogInfo, open: false });
+    };
+//---------------------------------------------------------------------------------
 
     return (
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
@@ -329,6 +426,8 @@ const handleChangeUserRole = (userId, newRole) => {
                 <Tabs value={currentTab} onChange={handleTabChange} aria-label="admin dashboard tabs" centered>
                     <Tab label="Propertie" />
                      <Tab label="Users" />
+                    <Tab label="Properties" />
+
                    
                 </Tabs>
             </Paper>
@@ -351,7 +450,7 @@ const handleChangeUserRole = (userId, newRole) => {
                 cancelText={dialogInfo.type === 'confirm' || dialogInfo.type === 'custom_confirm_appointment' ? 'Cancel' : undefined}
                 confirmColor={dialogInfo.type === 'error' ? 'error' : (dialogInfo.type === 'warning' ? 'warning' : 'primary')}
             >
-                {dialogInfo.type === 'custom_confirm_appointment' && renderCustomConfirmAppointmentDialogContent()}
+
             </ConfirmationDialog>
         </Container>
     );
