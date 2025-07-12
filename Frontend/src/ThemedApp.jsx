@@ -4,6 +4,7 @@ import PropertyListPage from './pages/PropertyListPage';
  import PropertyFormPage from './pages/PropertyFormPage';
  import LoginPage from './pages/LoginPage';
  import RegisterPage from './pages/RegisterPage';
+ import PropertyDetailPage from './pages/PropertyDetailPage';
 
 
 //import { useState, createContext } from "react"
@@ -61,6 +62,10 @@ const router=createBrowserRouter([
             {
             path:"/properties/new",
             element: <PropertyFormPage />,
+            },
+            {
+                path:"/properties/:id",
+                element:<PropertyDetailPage />,
             },
             
 

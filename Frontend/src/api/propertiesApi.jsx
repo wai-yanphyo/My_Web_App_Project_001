@@ -72,10 +72,10 @@ export const fetchPropertyById = async (id, token = null) => {
     };
 
     
-    // if (token) {
-    //     // headers['Authorization'] = `Bearer ${token}`;
-    //     headers['Authorization'] = `Bearer ${token}`;
-    // }
+    if (token) {
+        // headers['Authorization'] = `Bearer ${token}`;
+        //headers['Authorization'] = `Bearer ${token}`;
+    }
 
     try {
         console.log(`Attempting to fetch property with ID: ${id}`);
