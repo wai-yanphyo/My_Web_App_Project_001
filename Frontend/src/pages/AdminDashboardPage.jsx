@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 
 import useAuth from '../hooks/useAuth';
 import { fetchProperties, deleteProperty } from '../api/propertiesApi';
-import { fetchAllUsers } from '../api/userApi';
+import { fetchAllUsers, updateUserRole } from '../api/userApi';
 import ConfirmationDialog from '../components/ConfirmationDialog';
 
 
@@ -94,7 +94,16 @@ useEffect(() => {
     });
 
 
-    
+       const updateUserRoleMutation = useMutation({
+        mutationFn: ({ id, role }) => updateUserRole(id, role, token),
+        onSuccess: () => {
+            queryClient.invalidateQueries(['users']);
+            setDialogInfo({ open: true, title: 'Success', message: 'User role updated successfully.', type: 'success', confirmAction: null });
+        },
+        onError: (err) => {
+            setDialogInfo({ open: true, title: 'Error', message: `Error updating user role: ${err.message}`, type: 'error', confirmAction: null });
+        },
+    });
 
     //--------------------------------------
 
