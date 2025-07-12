@@ -16,13 +16,17 @@ import Slider from 'react-slick';
 import { parseISO, isFuture } from 'date-fns';
 
 import { fetchPropertyById } from '../api/propertiesApi';
+import { createAppointment } from '../api/appointmentApi';
+
 import useAuth from '../hooks/useAuth';
+import ConfirmationDialog from '../components/ConfirmationDialog';
 
 
 
 const PropertyDetailPage = () => {
 
 
+     const [open, setOpen] = useState(false);
 
     const { id } = useParams(); 
     const navigate = useNavigate();
@@ -31,11 +35,79 @@ const PropertyDetailPage = () => {
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
+
+    const [openAppointmentDialog, setOpenAppointmentDialog] = useState(false);
+    const [appointmentDate, setAppointmentDate] = useState('');
+    const [dialogInfo, setDialogInfo] = useState({ open: false, title: '', message: '', type: 'info' });
+
  const { data: property, isLoading, isError, error } = useQuery({
         queryKey: ['property', id],
         queryFn: () => fetchPropertyById(id),
         enabled: !!id,
     });
+
+//------------------Create Appointnt to Api---------------------
+ const createAppointmentMutation = useMutation({
+        mutationFn: (newAppointmentData) => createAppointment(newAppointmentData, token),
+        onSuccess: () => {
+            setDialogInfo({
+                open: true,
+                title: 'Appointment Requested!',
+                message: 'Your appointment request has been sent successfully. The admin will review it soon.',
+                type: 'success'
+            });
+                   console.log("Hi I am working now");
+
+            setOpenAppointmentDialog(false); 
+            setAppointmentDate(''); 
+            queryClient.invalidateQueries(['myCustomerAppointments']);
+        },
+        onError: (err) => {
+            setDialogInfo({
+                open: true,
+                title: 'Appointment Failed',
+                message: `Error booking appointment: ${err.message}`,
+                type: 'error'
+            });
+        },
+    });
+
+    const handleOpenAppointmentDialog = () => {
+        if (!user || user.role !== 'CUSTOMER') {
+            setDialogInfo({
+                open: true,
+                title: 'Action Not Allowed',
+                message: 'You must be logged in as a Customer to request an appointment.',
+                type: 'warning'
+            });
+            return;
+        }
+        setOpenAppointmentDialog(true);
+    };
+
+    const handleCloseAppointmentDialog = () => {
+        setOpenAppointmentDialog(false);
+        setAppointmentDate('');
+    };
+
+    const handleBookAppointment = () => {
+        if (!appointmentDate) {
+          console.error("Eror is I canoy see dialog box");
+            setDialogInfo({ open: true, title: 'Input Required', message: 'Please select an appointment date.', type: 'warning' });
+            return;
+        }
+        const selectedDate = parseISO(appointmentDate);
+        if (!isFuture(selectedDate)) {
+             setDialogInfo({ open: true, title: 'Invalid Date', message: 'Appointment date must be in the future.', type: 'warning' });
+            return;
+        }
+
+        createAppointmentMutation.mutate({
+            propertyId: parseInt(id),
+            appointmentDate: selectedDate.toISOString(),
+        });
+    };
+//------------------------------------------------
 
 
 
@@ -166,6 +238,55 @@ const PropertyDetailPage = () => {
           </Button>
         </Box>
       </CardContent>
+
+
+      {/* ---------For Dialog Box---------- */}
+
+        {/* ------------Appoint Confirmation-------- */}
+                  <Dialog open={open} onClose={() => {}}>
+                  <DialogTitle>Request Appointment for 123 Main Street</DialogTitle>
+                  <DialogContent>
+                    <Typography gutterBottom>
+                      Please select your preferred date and time for the appointment.
+                    </Typography>
+                    <TextField
+                      type="datetime-local"
+                      label="Appointment Date & Time"
+                      value={appointmentDate}
+                      onChange={(e) => setAppointmentDate(e.target.value)}
+                      fullWidth
+                      margin="normal"
+                      InputLabelProps={{ shrink: true }}
+                    />
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={() => {setOpen(false)}} color="secondary">
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleBookAppointment}
+                      color="primary"
+                      variant="contained"
+                      disabled={false}
+                    >
+                      Book Appointment
+                    </Button>
+                  </DialogActions>
+                  </Dialog>
+        {/* ---------------------------------------------- */}
+        
+        
+         {/* ----------Confirmation Dialog for info and error----------- */}
+                    <ConfirmationDialog
+                        open={dialogInfo.open}
+                        onClose={() => setDialogInfo({ ...dialogInfo, open: false })}
+                        onConfirm={() => setDialogInfo({ ...dialogInfo, open: false })} // Just close for info/error
+                        title={dialogInfo.title}
+                        message={dialogInfo.message}
+                        confirmText="Ok"
+                        confirmColor={dialogInfo.type === 'error' ? 'error' : (dialogInfo.type === 'warning' ? 'warning' : 'primary')}
+                    />
+          {/* ---------------------------------------- */}
 
 
 
