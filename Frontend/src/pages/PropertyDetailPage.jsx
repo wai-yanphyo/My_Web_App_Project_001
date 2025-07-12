@@ -17,6 +17,7 @@ import { parseISO, isFuture } from 'date-fns';
 
 import { fetchPropertyById } from '../api/propertiesApi';
 import { createAppointment } from '../api/appointmentApi';
+import { createComment, fetchCommentsForProperty } from '../api/commentApi';
 
 import useAuth from '../hooks/useAuth';
 import ConfirmationDialog from '../components/ConfirmationDialog';
@@ -25,8 +26,11 @@ import ConfirmationDialog from '../components/ConfirmationDialog';
 
 const PropertyDetailPage = () => {
 
-
+    const [page,setPage]=useState(1);
+ const itemsPerPage =5;
      const [open, setOpen] = useState(false);
+
+    
 
     const { id } = useParams(); 
     const navigate = useNavigate();
@@ -39,6 +43,7 @@ const PropertyDetailPage = () => {
     const [openAppointmentDialog, setOpenAppointmentDialog] = useState(false);
     const [appointmentDate, setAppointmentDate] = useState('');
     const [dialogInfo, setDialogInfo] = useState({ open: false, title: '', message: '', type: 'info' });
+    const [commentRatingForm, setCommentRatingForm] = useState({ rating: 0, comment: '' }); 
 
  const { data: property, isLoading, isError, error } = useQuery({
         queryKey: ['property', id],
@@ -47,7 +52,17 @@ const PropertyDetailPage = () => {
     });
 
 //------------------Create Appointnt to Api---------------------
- const createAppointmentMutation = useMutation({
+ 
+
+ const {data: comments, isLoading : isLoadingComments, isError : isErrorComments, error : errorComments}=useQuery({
+      queryKey : ['propertyComments',id],
+      queryFn : () => fetchCommentsForProperty(id),
+      enabled: !!id, //// Run only if id exists for example !!1=true !!'a' = true !!null = false !!0 = false !!underfined = fasle
+
+});
+
+
+const createAppointmentMutation = useMutation({
         mutationFn: (newAppointmentData) => createAppointment(newAppointmentData, token),
         onSuccess: () => {
             setDialogInfo({
@@ -108,6 +123,57 @@ const PropertyDetailPage = () => {
         });
     };
 //------------------------------------------------
+
+
+
+//------------For Comment and Ratingss-----------
+
+const createCommentMutation = useMutation({
+          mutationFn: (data) => createComment(data, token),
+          onSuccess: () => {
+              queryClient.invalidateQueries(['propertyComments', id]);
+              setDialogInfo({
+                  open: true,
+                  title: 'Comment Submitted!',
+                  message: 'Your comment and rating have been added successfully.',
+                  type: 'success'
+              });
+              setCommentRatingForm({ rating: 0, comment: '' });
+          },
+          onError: (err) => {
+              setDialogInfo({
+                  open: true,
+                  title: 'Submission Failed',
+                  message: `Error submitting comment: ${err.message}`,
+                  type: 'error'
+              });
+          },
+      });
+  
+      const handleCommentChange = (e) => {
+          setCommentRatingForm({ ...commentRatingForm, comment: e.target.value });
+      };
+  
+      const handleRatingChange = (event, newValue) => {
+          setCommentRatingForm({ ...commentRatingForm, rating: newValue });
+      };
+  
+      const handleSubmitComment = () => {
+          console.log("User value:", user);
+
+        
+          if (commentRatingForm.rating === 0) {
+              setDialogInfo({ open: true, title: 'Rating Required', message: 'Please give a star rating.', type: 'warning' });
+              return;
+          }
+  
+          createCommentMutation.mutate({
+              propertyId: parseInt(id),
+              rating: commentRatingForm.rating,
+              comment: commentRatingForm.comment,
+          });
+      };
+//------------------------------------
 
 
 
@@ -290,6 +356,107 @@ const PropertyDetailPage = () => {
 
 
 
+
+
+{/* -----------------For Comment and Rating ------------- */}
+<Divider sx={{ my: 3 }} />
+
+{/* STATIC: Comments and Ratings Section */}
+<Typography variant="h5" gutterBottom sx={{ mb: 2 }}>
+    Customer Reviews ({comments?.length || 0})
+</Typography>
+
+{/* Leave a Review - Static */}
+<Box sx={{ mb: 4, p: 2, border: '1px solid #e0e0e0', borderRadius: 2, bgcolor: 'background.paper' }}>
+    <Typography variant="h6" gutterBottom>Leave a Review</Typography>
+    <Rating
+        name="property-rating"
+        value={commentRatingForm.rating}
+        onChange={handleRatingChange}
+        precision={1}
+        sx={{ mb: 1 }}
+        emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
+    />
+    <TextField
+        label="Your Comment (optional)"
+        multiline
+        rows={3}
+        fullWidth
+        // value="Hi"
+        value={commentRatingForm.comment}
+        // InputProps={{ readOnly:true}}
+        onChange={handleCommentChange}
+        sx={{ mb: 2 }}
+    />
+    <Button variant="contained" onClick={handleSubmitComment} disabled={createCommentMutation.isLoading || commentRatingForm.rating === 0}>  
+     
+
+      {createCommentMutation.isLoading ? <CircularProgress size={24} /> : 'Submit Review'}
+
+    </Button>
+</Box>
+
+
+
+
+<List>
+  
+    {comments?.slice((page - 1) * itemsPerPage, page * itemsPerPage) .map((comment) => (
+    <React.Fragment key={comment.id}>
+      <ListItem alignItems="flex-start" sx={{ mb: 1 }}>
+        <Avatar sx={{ mr: 2 }}>
+          {comment.customer?.email?.charAt(0).toUpperCase() || 'A'}
+        </Avatar>
+        <ListItemText
+          primary={
+            <>
+              <Typography component="span" variant="subtitle1" color="text.primary">
+                {comment.customer?.email || 'Anonymous Customer'}
+              </Typography>
+              <Rating
+                name={`rating-${comment.id}`}
+                value={comment.rating}
+                readOnly
+                size="small"
+                sx={{ ml: 1, verticalAlign: 'middle' }}
+                emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
+              />
+            </>
+          }
+          secondary={
+            <>
+             
+              <div style={{ 
+              wordBreak: 'break-word', 
+              whiteSpace: 'pre-wrap', 
+              overflowWrap: 'anywhere' 
+            }}>
+             {comment.comment}
+            </div>
+              <Typography variant="caption" color="text.disabled">
+                {new Date(comment.createdAt).toLocaleString() || ''}
+              </Typography>
+            </>
+          }
+        />
+      </ListItem>
+      <Divider variant="inset" component="li" />
+    </React.Fragment>
+  ))}
+</List>
+
+{comments && comments.length > itemsPerPage && (
+  <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+    <Pagination
+      count={Math.ceil(comments.length / itemsPerPage)}
+      page={page}
+      onChange={(event, value) => setPage(value)}
+      color="primary"
+    />
+  </Box>
+)}
+
+{/* ------------------------------------------------------ */}
   
   </Container>
 
