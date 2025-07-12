@@ -12,7 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import { fetchProperties, deleteProperty } from '../api/propertiesApi';
 import { fetchAllUsers, updateUserRole } from '../api/userApi';
-import { confirmAppointment,fetchAllAppointments} from '../api/appointmentApi';
+import { confirmAppointment,fetchAllAppointments,updateAppointmentStatus} from '../api/appointmentApi';
 import ConfirmationDialog from '../components/ConfirmationDialog';
 
 
@@ -128,6 +128,20 @@ useEffect(() => {
         },
     });
 
+
+     const updateAppointmentStatusMutation = useMutation({
+        mutationFn: ({ id, status }) => updateAppointmentStatus(id, status, token),
+        onSuccess: () => {
+            queryClient.invalidateQueries(['appointments']);
+            setDialogInfo({ open: true, title: 'Success', message: 'Appointment status updated.', type: 'success', confirmAction: null });
+        },
+        onError: (err) => {
+            setDialogInfo({ open: true, title: 'Error', message: `Error updating appointment status: ${err.message}`, type: 'error', confirmAction: null });
+        },
+    });
+
+
+
     //--------------------------------------
 
 
@@ -184,6 +198,19 @@ const handleConfirmAppointment = (appointmentId) => {
             confirmAction: null, 
         });
     };
+
+
+const handleUpdateAppointmentStatus = (appointmentId, newStatus) => {
+        setDialogInfo({
+            open: true,
+            title: `Confirm Status Change to ${statusLabels[newStatus]}`,
+            message: `Are you sure you want to change the status of this appointment to ${statusLabels[newStatus]}?`,
+            type: 'confirm',
+            confirmAction: () => updateAppointmentStatusMutation.mutate({ id: appointmentId, status: newStatus }),
+        });
+    };
+
+
 
 //---------------------------
 
@@ -408,6 +435,35 @@ const handleConfirmAppointment = (appointmentId) => {
     };
 
    
+
+
+
+const renderCustomConfirmAppointmentDialogContent = () => (
+        <Box sx={{ mt: 2 }}>
+            <Typography gutterBottom>
+                Are you sure you want to confirm this appointment? You can also assign an agent now.
+            </Typography>
+            <FormControl fullWidth margin="normal">
+                <InputLabel id="agent-select-label">Assign Agent (Optional)</InputLabel>
+                <Select
+                    labelId="agent-select-label"
+                    value={selectedAgent}
+                    label="Assign Agent (Optional)"
+                    onChange={(e) => setSelectedAgent(e.target.value)}
+                >
+                    <MenuItem value="">
+                        <em>No Agent</em>
+                    </MenuItem>
+                    {availableAgents.map((agent) => (
+                        <MenuItem key={agent.id} value={agent.id}>
+                            {agent.email}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+        </Box>
+    );
+
 // -------------------To acept requestiing appointment----------------
  const handleCustomConfirmAppointmentAction = () => {
         if (tempAppointmentId) {
@@ -450,6 +506,8 @@ const handleConfirmAppointment = (appointmentId) => {
                 cancelText={dialogInfo.type === 'confirm' || dialogInfo.type === 'custom_confirm_appointment' ? 'Cancel' : undefined}
                 confirmColor={dialogInfo.type === 'error' ? 'error' : (dialogInfo.type === 'warning' ? 'warning' : 'primary')}
             >
+         {dialogInfo.type === 'custom_confirm_appointment' && renderCustomConfirmAppointmentDialogContent()}
+
 
             </ConfirmationDialog>
         </Container>

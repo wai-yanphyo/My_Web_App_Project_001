@@ -80,3 +80,20 @@ export const confirmAppointment = async (id, agentId, token) => {
     }
     return response.json();
 };
+
+
+export const updateAppointmentStatus = async (id, status, token) => {
+    const response = await fetch(`${API_BASE_URL}/appointments/${id}/status`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status }),
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Failed to update appointment status to ${status}`);
+    }
+    return response.json();
+};
