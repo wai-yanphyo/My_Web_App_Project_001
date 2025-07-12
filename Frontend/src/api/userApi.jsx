@@ -3,6 +3,7 @@ const API_BASE_URL = 'http://localhost:5000/api';
 export const fetchAllUsers = async (token) => {
     const response = await fetch(`${API_BASE_URL}/users`, {
         headers: {
+               headers: { 'Content-Type': 'application/json' },
             'Authorization': `Bearer ${token}`,
         },
     });

@@ -11,9 +11,23 @@ import { useNavigate } from 'react-router-dom';
 
 import useAuth from '../hooks/useAuth';
 import { fetchProperties, deleteProperty } from '../api/propertiesApi';
+import { fetchAllUsers } from '../api/userApi';
 import ConfirmationDialog from '../components/ConfirmationDialog';
 
 
+
+const roleLabels = {
+    CUSTOMER: 'Customer',
+    AGENT: 'Agent',
+    ADMIN: 'Admin',
+};
+
+const statusLabels = {
+    PENDING: 'Pending',
+    CONFIRMED: 'Confirmed',
+    COMPLETED: 'Completed',
+    CANCELLED: 'Cancelled',
+};
 
 
 const AdminDashboardPage = () => {
@@ -79,6 +93,9 @@ useEffect(() => {
         },
     });
 
+
+    
+
     //--------------------------------------
 
 
@@ -86,9 +103,9 @@ useEffect(() => {
 
     
 
-   
+   //=============Handles==============
 
-    // --- Handlers for Delete Property---
+//--- Handlers for Delete Property---
     const handleDeleteProperty = (id) => {
         setDialogInfo({
             open: true,
@@ -99,8 +116,34 @@ useEffect(() => {
         });
     };
 
+//-------------------------------------
 
-    //------------------------------------------------
+//----------Handles for changing users------
+const handleChangeUserRole = (userId, newRole) => {
+        if (userId === user.id && newRole !== user.role) {
+            setDialogInfo({
+                open: true,
+                title: 'Action Not Allowed',
+                message: 'You cannot change your own role from the dashboard.',
+                type: 'warning',
+                confirmAction: null,
+            });
+            return;
+        }
+
+        setDialogInfo({
+            open: true,
+            title: 'Confirm Role Change',
+            message: `Are you sure you want to change this user's role to ${roleLabels[newRole]}?`,
+            type: 'confirm',
+            confirmAction: () => updateUserRoleMutation.mutate({ id: userId, role: newRole }),
+        });
+    };
+
+//---------------------------
+
+
+    //====================================
    
     const availableAgents = users?.filter(u => u.role === 'AGENT') || [];
 
@@ -212,7 +255,54 @@ useEffect(() => {
                         </Table>
                     </TableContainer>
                 );
-            default:
+             case 1: // Users
+                if (isLoadingUsers) return <CircularProgress />;
+                if (isErrorUsers) return <Alert severity="error">Error loading users: {errorUsers.message}</Alert>;
+                return (
+                    <TableContainer component={Paper}>
+                        <Table size="small">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>ID</TableCell>
+                                    <TableCell>Email</TableCell>
+                                    <TableCell>Role</TableCell>
+                                    <TableCell>Actions</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {users.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={4} align="center">No users found.</TableCell>
+                                    </TableRow>
+                                ) : (
+                                    users.map((u) => ( 
+                                        <TableRow key={u.id}>
+                                            <TableCell>{u.id}</TableCell>
+                                            <TableCell>{u.email}</TableCell>
+                                            <TableCell>
+                                                <FormControl variant="standard" size="small">
+                                                    <Select
+                                                        value={u.role}
+                                                        onChange={(e) => handleChangeUserRole(u.id, e.target.value)}
+                                                        disabled={u.id === user.id} 
+                                                    >
+                                                        <MenuItem value="CUSTOMER">Customer</MenuItem>
+                                                        <MenuItem value="AGENT">Agent</MenuItem>
+                                                        <MenuItem value="ADMIN">Admin</MenuItem>
+                                                    </Select>
+                                                </FormControl>
+                                            </TableCell>
+                                            <TableCell>
+                                                {/* Currently not  delete for users */}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                );
+                default:
                 return null;
         }
     };
@@ -229,6 +319,7 @@ useEffect(() => {
             <Paper sx={{ width: '150%', mb: 2 }}>
                 <Tabs value={currentTab} onChange={handleTabChange} aria-label="admin dashboard tabs" centered>
                     <Tab label="Propertie" />
+                     <Tab label="Users" />
                    
                 </Tabs>
             </Paper>
