@@ -16,3 +16,32 @@ export const createAppointment = async (appointmentData, token) => {
     }
     return response.json();
 };
+
+
+
+export const fetchMyCustomerAppointments = async (token) => {
+    const response = await fetch(`${API_BASE_URL}/appointments/my-customer-appointments`, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        },
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to fetch your appointments');
+    }
+    return response.json();
+};
+
+
+export const fetchMyAgentAppointments = async (token) => {
+    const response = await fetch(`${API_BASE_URL}/appointments/my-agent-appointments`, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        },
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to fetch assigned appointments');
+    }
+    return response.json();
+};

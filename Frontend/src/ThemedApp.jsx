@@ -5,6 +5,7 @@ import PropertyListPage from './pages/PropertyListPage';
  import LoginPage from './pages/LoginPage';
  import RegisterPage from './pages/RegisterPage';
  import PropertyDetailPage from './pages/PropertyDetailPage';
+  import MyAppointmentsPage from './pages/MyAppointmentsPage';
 
 
 //import { useState, createContext } from "react"
@@ -67,7 +68,10 @@ const router=createBrowserRouter([
                 path:"/properties/:id",
                 element:<PropertyDetailPage />,
             },
-            
+            {
+                path:"/properties/myappointmentspage",
+                element:<MyAppointmentsPage />,
+            }
 
         ],
 
