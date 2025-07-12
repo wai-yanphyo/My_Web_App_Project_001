@@ -100,7 +100,7 @@ const [mode, setMode] = useState("light");  //dark
         
         
         <ThemeProvider theme={theme}>
-            <AppContext.Provider value={{ showDrawer, setShowDrawer,mode, setMode, }}>
+            <AppContext.Provider value={{ showDrawer, setShowDrawer,mode, setMode,}}>
             
             {/* Replce with route at <Template /> */}
             <RouterProvider router={router} />  

@@ -30,12 +30,13 @@ import { useApp } from '../ThemedApp';
 
 
  import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+ import useAuth from '../hooks/useAuth';
 
 
  
 const AppDrawer=()=> {
         
-        const { user, handleLogout } = true;
+        const { user, handleLogout } = useAuth();
          const {showDrawer, setShowDrawer }=useApp();
             return (
                     <div>
