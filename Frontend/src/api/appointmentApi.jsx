@@ -20,18 +20,29 @@ export const createAppointment = async (appointmentData, token) => {
 
 
 export const fetchMyCustomerAppointments = async (token) => {
-    const response = await fetch(`${API_BASE_URL}/appointments/my-customer-appointments`, {
-       headers: {
-            'Content-Type': 'application/json',
-            //'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(appointmentData),
-    });
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to fetch your appointments');
-    }
-    return response.json();
+    // const response = await fetch(`${API_BASE_URL}/appointments/my-customer-appointments`, {
+    //    headers: {
+    //         'Content-Type': 'application/json',
+    //         'Authorization': `Bearer ${token}`,
+    //     },
+    //     body: JSON.stringify(appointmentData),
+    // });
+    // if (!response.ok) {
+    //     const errorData = await response.json();
+    //     throw new Error(errorData.message || 'Failed to fetch your appointments');
+    // }
+    // return response.json();
+
+        console.log("Fetching customer appointments with token:", token);
+    return [
+        {
+            id: 1,
+            property: { address: "123 Main Street" },
+            appointmentDate: new Date().toISOString(),
+            status: "PENDING",
+            agent: { email: "agent@example.com" }
+        }
+    ];
 };
 
 

@@ -19,9 +19,9 @@ router.post('/',protect, createAppointment);
 router.get('/', getAllAppointments);
 
 
- router.get('/my-customer-appointments',getMyCustomerAppointments);
+ router.get('/my-customer-appointments',protect,getMyCustomerAppointments);
 
-router.get('/my-agent-appointments',getMyAgentAppointments);
+router.get('/my-agent-appointments',protect,getMyAgentAppointments);
 
 
 router.put('/:id/confirm', confirmAppointment);

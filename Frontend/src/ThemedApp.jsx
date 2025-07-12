@@ -5,10 +5,10 @@ import PropertyListPage from './pages/PropertyListPage';
  import LoginPage from './pages/LoginPage';
  import RegisterPage from './pages/RegisterPage';
  import PropertyDetailPage from './pages/PropertyDetailPage';
-  import MyAppointmentsPage from './pages/MyAppointmentsPage';
+import MyAppointmentsPage from './pages/MyAppointmentsPage';
 import AdminDashboardPage from "./pages/AdminDashboardPage";
 
-//import { useState, createContext } from "react"
+
 import { useState, createContext, useContext, useMemo } from "react";
 import { deepPurple, grey } from "@mui/material/colors";
  import { 
@@ -75,7 +75,7 @@ const router=createBrowserRouter([
             {
                 path:"/admindashboard",
                 element:<AdminDashboardPage />,
-            }
+            },
         ],
     },
             

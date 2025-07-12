@@ -9,7 +9,7 @@ import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 
 import ConfirmationDialog from '../components/ConfirmationDialog';
-import { fetchMyCustomerAppointments, fetchMyAgentAppointments } from '../api/appointmentApi';
+import { fetchMyCustomerAppointments, fetchMyAgentAppointments ,updateAppointmentStatus} from '../api/appointmentApi';
 //import useAuth from '../hooks/useAuth';
 
 const statusLabels = {
@@ -36,7 +36,7 @@ const MyAppointmentsPage = () => {
 
 
     const navigate = useNavigate();
-     //const { user, token } = useAuth();
+    // const { user, token } = useAuth();
     const user =useAuth;
     const token =tokens;
     const queryClient = useQueryClient();
@@ -49,18 +49,29 @@ const MyAppointmentsPage = () => {
             setDialogInfo({ open: true, title: 'Access Denied', message: 'Please log in to view your appointments.', type: 'error',confirmAction: null});
             setTimeout(() => navigate('/login'), 1500); 
         } 
-           else if (user.role !== 'CUSTOMER' && user.role !== 'AGENT') {
-            setDialogInfo({ open: true, title: 'Access Denied', message: 'You are not authorized to view this page.', type: 'error' ,confirmAction: null});
+           else if(user?.role !== 'CUSTOMER' && user?.role !== 'AGENT') {
+            setDialogInfo({ 
+                open: true, 
+                title: 'Access Denied',
+                 message: 'You are not authorized to view this page.',
+                  type: 'error' ,
+                  });
             setTimeout(() => navigate('/'), 1500); 
         }
      }, [user, navigate]);
+console.log(user?.role)
 
 
     const { data: customerAppointments, isLoading: isLoadingCustomer, isError: isErrorCustomer, error: errorCustomer } = useQuery({
-        queryKey: ['myCustomerAppointments', user?.id],
+        queryKey: ['myCustomerAppointments', 1],
         queryFn: () => fetchMyCustomerAppointments(token),
-        enabled: user?.role === 'CUSTOMER', 
+        enabled: user?.id === 2, 
     });
+
+   
+
+
+    
 
     const { data: agentAppointments, isLoading: isLoadingAgent, isError: isErrorAgent, error: errorAgent } = useQuery({
         queryKey: ['myAgentAppointments', user?.id],
@@ -100,6 +111,9 @@ const MyAppointmentsPage = () => {
         });
     };
 
+        
+    
+
     
     if (!user) {
         return (
@@ -107,23 +121,23 @@ const MyAppointmentsPage = () => {
                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}><CircularProgress /></Box>
             </Container>
         );
-    }
+    };
 
   
-    if (user.role !== 'CUSTOMER' && user.role !== 'AGENT') {
+    if (user?.role !== 'CUSTOMER' && user?.role !== 'AGENT') {
         return null; 
     }
 
-    if (user.role === 'CUSTOMER' && (isLoadingCustomer || isErrorCustomer)) {
+    if (user?.role === 'CUSTOMER' && (isLoadingCustomer || isErrorCustomer)) {
         return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}><CircularProgress /></Box>;
     }
-    if (user.role === 'AGENT' && (isLoadingAgent || isErrorAgent)) {
+    if (user?.role === 'AGENT' && (isLoadingAgent || isErrorAgent)) {
         return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}><CircularProgress /></Box>;
     }
 
-    const appointmentsToDisplay = user.role === 'CUSTOMER' ? customerAppointments : agentAppointments;
-    const isCustomer = user.role === 'CUSTOMER';
-    const isAgent = user.role === 'AGENT';
+    const appointmentsToDisplay = user?.role === 'CUSTOMER' ? customerAppointments : agentAppointments;
+    const isCustomer = user?.role === 'CUSTOMER';
+    const isAgent = user?.role === 'AGENT';
 
     return (
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
@@ -161,15 +175,15 @@ const MyAppointmentsPage = () => {
                                     <TableCell>
                                         {isCustomer && appointment.status === 'PENDING' && (
                                             <IconButton size="small" color="error" onClick={() => handleUpdateStatus(appointment.id, 'CANCELLED')}>
-                                                <CancelIcon /> {/* Customer can cancel pending */}
+                                                <CancelIcon /> 
                                             </IconButton>
                                         )}
                                         {isAgent && appointment.status === 'CONFIRMED' && (
                                             <IconButton size="small" color="success" onClick={() => handleUpdateStatus(appointment.id, 'COMPLETED')}>
-                                                <CheckCircleIcon /> {/* Agent can mark confirmed as completed */}
+                                                <CheckCircleIcon /> 
                                             </IconButton>
                                         )}
-                                        {/* Admin can see all actions on Admin Dashboard */}
+                                       
                                     </TableCell>
                                 </TableRow>
                             ))}
