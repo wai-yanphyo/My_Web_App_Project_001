@@ -115,7 +115,7 @@ const updateProperty = async (req, res) => {
 
 const deleteProperty = async (req, res) => {
     const propertyId = parseInt(req.params.id);
-    const userId = req.user;
+    const userId = req.user.id;
     if (isNaN(propertyId)) {
         return res.status(400).json({ message: 'Invalid property ID format.' });
     }
