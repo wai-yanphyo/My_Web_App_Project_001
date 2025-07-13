@@ -2,15 +2,54 @@ const prisma = require('../config/db'); // Import Prisma client
 
 
 const getProperties = async (req, res) => {
+
+    const { search, minPrice, maxPrice, minBedrooms, minBathrooms } = req.query;
+    const whereClause = {};
+
+     if (search) {
+        whereClause.address = {
+            contains: search,
+            mode: 'insensitive',
+        
+        };
+    }
+
+     if (minPrice || maxPrice) {
+        whereClause.price = {};
+        if (minPrice) {
+            whereClause.price.gte = parseFloat(minPrice);
+        }
+        if (maxPrice) {
+            whereClause.price.lte = parseFloat(maxPrice);
+        }
+    }
+
+
+    if (minBedrooms) {
+        whereClause.bedrooms = {
+            gte: parseInt(minBedrooms),
+        };
+    }
+
+
+     if (minBathrooms) {
+        whereClause.bathrooms = {
+            gte: parseFloat(minBathrooms),
+        };
+    }
+    
     try {
-        const properties = await prisma.property.findMany();
+        const properties = await prisma.property.findMany(
+            {
+             where: whereClause,
+            include: { owner: { select: { email: true, id: true } } },
+            orderBy: { createdAt: 'desc' } 
+            });
         res.status(200).json(properties);
         // setTimeout(()=>{
         //             res.status(200).json(properties);
 
         // },200);
-
-
     } catch (error) {
         console.error('Error fetching properties:', error);
         res.status(500).json({ message: 'Server error while fetching properties.' });
