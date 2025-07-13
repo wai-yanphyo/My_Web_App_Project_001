@@ -9,6 +9,7 @@ jest.mock('../config/db', () => ({
   property: {
     findMany: jest.fn(),
     create: jest.fn(),
+    update: jest.fn(),
    
   }
 }));
@@ -67,6 +68,20 @@ describe('Property API Routes', () => {
 
     expect(res.statusCode).toBe(201);
     expect(res.body).toEqual(createdProperty);
+  });
+
+
+   test('PUT /api/properties/:id updates a property', async () => {
+    const updated = { id: 1, address: 'Updated', price: 123456, ownerId: 1 };
+    prisma.property.findUnique.mockResolvedValue(updated);
+    prisma.property.update.mockResolvedValue(updated);
+
+    const res = await request(app)
+      .put('/api/properties/1')
+      .send({ address: 'Updated', price: 123456 });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual(updated);
   });
 
 
