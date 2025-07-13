@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 
 import ConfirmationDialog from '../components/ConfirmationDialog';
 import { fetchMyCustomerAppointments, fetchMyAgentAppointments ,updateAppointmentStatus} from '../api/appointmentApi';
-//import useAuth from '../hooks/useAuth';
+import useAuth from '../hooks/useAuth';
 
 const statusLabels = {
     PENDING: 'Pending',
@@ -21,14 +21,14 @@ const statusLabels = {
 
 
 
-const useAuth = {
+// const useAuth = {
     
         
-            id: 2,
-            role: 'CUSTOMER',
-            email: 'test@example.com',
-        };
-  const tokens='fake-token';
+//             id: 2,
+//             role: 'CUSTOMER',
+//             email: 'test@example.com',
+//         };
+//   const tokens='fake-token';
    
 
 
@@ -36,20 +36,22 @@ const MyAppointmentsPage = () => {
 
 
     const navigate = useNavigate();
-    // const { user, token } = useAuth();
-    const user =useAuth;
-    const token =tokens;
+     const { user, token } = useAuth();
+    //const user =useAuth;
+    //const token =tokens;
     const queryClient = useQueryClient();
 
     const [dialogInfo, setDialogInfo] = useState({ open: false, title: '', message: '', type: 'info', confirmAction: null });
 
     useEffect(() => {
         console.log(user);
-        if (!user) { 
-            setDialogInfo({ open: true, title: 'Access Denied', message: 'Please log in to view your appointments.', type: 'error',confirmAction: null});
-            setTimeout(() => navigate('/login'), 1500); 
-        } 
-           else if(user?.role !== 'CUSTOMER' && user?.role !== 'AGENT') {
+        // if (!user) { 
+        //     setDialogInfo({ open: true, title: 'Access Denied', message: 'Please log in to view your appointments.', type: 'error',confirmAction: null});
+        //     setTimeout(() => navigate('/login'), 1500); 
+        // } 
+        //    else 
+            
+            if(user?.role !== 'CUSTOMER' && user?.role !== 'AGENT') {
             setDialogInfo({ 
                 open: true, 
                 title: 'Access Denied',
@@ -65,7 +67,7 @@ console.log(user?.role)
     const { data: customerAppointments, isLoading: isLoadingCustomer, isError: isErrorCustomer, error: errorCustomer } = useQuery({
         queryKey: ['myCustomerAppointments', 1],
         queryFn: () => fetchMyCustomerAppointments(token),
-        enabled: user?.id === 2, 
+        enabled: user?.role === 'CUSTOMER', 
     });
 
    
