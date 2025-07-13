@@ -8,6 +8,7 @@ const propertyRoutes = require('../routes/propertyRoutes');
 jest.mock('../config/db', () => ({
   property: {
     findMany: jest.fn(),
+    create: jest.fn(),
    
   }
 }));
@@ -45,6 +46,31 @@ describe('Property API Routes', () => {
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual(fakeProperties);
   });
+
+
+    test('POST /api/properties creates a property', async () => {
+    const newProperty = {
+      address: '456 Ave',
+      price: 150000,
+      bedrooms: 2,
+      bathrooms: 1.5,
+      description: 'Nice house',
+      imageUrl: 'url'
+    };
+
+    const createdProperty = { id: 2, ...newProperty, ownerId: 1 };
+    prisma.property.create.mockResolvedValue(createdProperty);
+
+    const res = await request(app)
+      .post('/api/properties')
+      .send(newProperty);
+
+    expect(res.statusCode).toBe(201);
+    expect(res.body).toEqual(createdProperty);
+  });
+
+
+
 
   
 
