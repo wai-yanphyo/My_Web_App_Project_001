@@ -7,9 +7,11 @@ const propertyRoutes = require('../routes/propertyRoutes');
 
 jest.mock('../config/db', () => ({
   property: {
-    findMany: jest.fn(),
+    findMany: jest.fn(), 
+    findUnique: jest.fn(),
     create: jest.fn(),
     update: jest.fn(),
+     
    
   }
 }));
@@ -46,6 +48,17 @@ describe('Property API Routes', () => {
 
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual(fakeProperties);
+  });
+
+
+  test('GET /api/properties/:id returns a single property', async () => {
+    const fakeProperty = { id: 1, address: '123 Street', price: 100000 };
+    prisma.property.findUnique.mockResolvedValue(fakeProperty);
+
+    const res = await request(app).get('/api/properties/1');
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual(fakeProperty);
   });
 
 
