@@ -11,8 +11,8 @@ jest.mock('../config/db', () => ({
     findUnique: jest.fn(),
     create: jest.fn(),
     update: jest.fn(),
+    delete: jest.fn(),
      
-   
   }
 }));
 
@@ -97,6 +97,16 @@ describe('Property API Routes', () => {
     expect(res.body).toEqual(updated);
   });
 
+    test('DELETE /api/properties/:id deletes a property', async () => {
+  const property = { id: 1, ownerId: 1 };
+  prisma.property.findUnique.mockResolvedValue(property);
+  prisma.property.delete.mockResolvedValue(property);
+
+  const res = await request(app).delete('/api/properties/1');
+
+  expect(res.statusCode).toBe(200);
+  expect(res.body.message).toBe('Property successfully deleted.');
+});
 
 
 
