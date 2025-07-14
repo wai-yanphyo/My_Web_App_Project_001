@@ -22,3 +22,49 @@ jest.mock('../config/db', () => ({
     COMPLETED: 'COMPLETED',
   }
 }));
+
+jest.mock('../middleware/authMiddleware', () => ({
+  protect: (req, res, next) => {
+    req.user = { id: 3, role: 'ADMIN' }; 
+    next();
+  }
+}));
+
+jest.mock('../middleware/authorize', () => ({
+  authorize: () => (req, res, next) => next()
+}));
+
+
+
+const prisma = require('../config/db');
+
+const app = express();
+app.use(express.json());
+app.use('/api/appointments', appointmentRoutes);
+
+describe('Appointment API Routes', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('GET /api/appointments returns all appointments', async () => {
+    const fakeAppointments = [
+      {
+        id: 1,
+        appointmentDate: '2099-01-01T10:00:00Z',
+        status: 'PENDING',
+        property: { address: '123 St', imageUrl: 'url', ownerId: 1 },
+        customer: { email: 'customer@example.com' },
+        agent: { email: 'agent@example.com' }
+      }
+    ];
+
+    prisma.appointment.findMany.mockResolvedValue(fakeAppointments);
+
+    const res = await request(app).get('/api/appointments');
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual(fakeAppointments);
+  });
+  
+});
