@@ -16,7 +16,7 @@ import useAuth from '../hooks/useAuth';
 const PropertyListPage = () => {
    
     const navigate = useNavigate();
-    const { token } = useAuth();
+    const { user, token } = useAuth();
 
     const [openDialog, setOpenDialog] = useState(false);
     const [dialogTitle, setDialogTitle] = useState('');
@@ -97,7 +97,7 @@ const handleDeleteClick = (id) => {
                 <Typography variant="h4" component="h1">
                     Available Properties
                 </Typography>
-                { token && (
+                { token && user?.role!=="CUSTOMER" && (
                     <Button
                         variant="contained"
                         startIcon={<AddIcon />}
