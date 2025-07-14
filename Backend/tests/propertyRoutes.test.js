@@ -25,6 +25,11 @@ jest.mock('../middleware/authMiddleware', () => ({
   }
 }));
 
+jest.mock('../middleware/authorize', () => ({
+  authorize: () => (req, res, next) => next()
+}));
+
+     
 
 
 const prisma = require('../config/db');
