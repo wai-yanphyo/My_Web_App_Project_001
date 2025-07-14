@@ -14,97 +14,68 @@ Google Map   : No(27), Aung Zay Ya Lane 2,Golden Valley 1, Bahan township, Yango
 ----------------------------------------------------------------------------------------------------------------------------
 
 
-***Weaknesses of the Existing Website***
+# AnywhereProperty Myanmar - Real Estate Management Platform
 
-	The current website of Anywhere Myanmar Real Estate (https://anywhereproperty.com.mm) faces several limitations that hinder user experience, scalability, and operational efficiency. These weaknesses are categorized as follows:
+**Company Name:** AnywhereProperty  
+**Location:** No(27), Aung Zay Ya Lane 2, Golden Valley 1, Bahan Township, Yangon, Myanmar  
+**Website:** [https://anywhereproperty.com.mm](https://anywhereproperty.com.mm)  
 
-1. Design & User Interface (UI)
+##  Project Overview
 
-Outdated visual design that does not align with modern web design standards.
+AnywhereProperty is a real estate listing platform based in Myanmar. Our goal is to connect property seekers with landlords and real estate agents in a seamless and interactive way. We are developing a modern web application to enhance property browsing, searching, booking appointments, and managing listings with a full-featured dashboard and role-based access control.
 
-Non-responsive layout — poor usability on smartphones and tablets.
+##  Key Features
 
-Lack of interactive elements such as animations, transitions, or visual feedback that enhance user engagement.
+- **Advanced Property Search & Filters**  
+  Search by location, price range, property type, bedrooms, and more.
 
+-  **Role-Based Access Control**  
+  Supports Admins, Agents, and Customers with secure login and specific permissions.
 
-2. Search Functionality
+-  **Appointment System**  
+  Customers can request property viewings, and admins can approve and assign them to agents.
 
-Limited to basic keyword searches with no intelligence or structure.
+- **Social Features**  
+  Users can comment on and rate properties.
 
-No advanced filters for users and endusers to refine search by:
+-  **Full CRUD Support**  
+  Create, Read, Update, and Delete properties with easy-to-use forms and admin panels.
 
-Number of bedrooms or bathrooms
+-  **Unit Testing with Jest**  
+  Backend logic is covered with unit tests for reliability.
 
-Other Facilityies
+## Tech Stack
 
-Cannot work filters as well.
+### Frontend
+- React
+- Vite.js
+- Material-UI (MUI)
 
-No sorting options for search results (e.g., by price, date added, or popularity).
+### Backend
+- Node.js
+- Express.js
+- Prisma ORM
+- SQLite (Development)
+- JWT for authentication
+- Jest for testing
 
+---
 
-3. Content Management
+##  Installation & Setup
 
-Property listings appear static (not fully dynamic), likely requiring manual updates through WordPress admin.
+### Prerequisites
 
-No real-time data sync — changes do not reflect immediately for users.
+- Node.js (v18+)
+- npm
+- Git
 
-No custom backend system for property agents to manage listings, photos, or statuses (e.g., sold/rented).
+### Clone the Project
 
-
-
-4. User Features
-
-No login/registration system for buyers, renters, or agents.
-
-No ability to save favorite properties or set viewing preferences.
-
-No built-in messaging system to directly contact agents or schedule viewings.
-
-
-5. Technical Limitations
-
-Built on outdated technologies, possibly static HTML with legacy PHP on WordPress.
-
-Lacks proper database integration — no dynamic listing management (no CRUD operations: Create, Read, Update, Delete).
-
-Poor SEO optimization, which limits visibility on search engines like Google.
-
-Not scalable or modular, making future upgrades costly and complex.
-
------------------------------------------------------------------------------------------------------------------------------------------------------
-
-***Project Objective***
-
-To develop a web application that improves the performance, usability, and features of a real estate rental website in Myanmar.
-
-My plan & target: Redesign and rebuild this current webiste into a dynamic, user-centric real estate web platform. I believe that this transformation will help  to attract more customers and drive business growth more and more.
+```bash
+git clone https://github.com/my-username/anywhereproperty-webapp.git
+cd anywhereproperty-webapp
 
 
-✅Core Functional Improvements:
-
-Modern Responsive UI (React frontend)
-
-Dynamic Listings (CRUD system with Node.js)
-
-Advanced Search (filter by location, price, bedrooms, other facilities etc.)
-
-Map Integration (Google Maps for property locations)
-
-User Registration/Login 
-
-Favorites and Compare Features (social media features)
-
-Contact Agent / Chat (real-time inquiries with agents)
-
-✅ Optional Enhancements:
-
-Multilingual Support (English + Burmese)
-
-Admin Dashboard (to manage listings, users, etc.)
-
-SEO Optimization (for better reach)
-
-Notifications (email alerts for new listings)
 
 
 -------------------------------------------------------------------
