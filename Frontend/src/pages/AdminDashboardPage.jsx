@@ -49,13 +49,14 @@ const AdminDashboardPage = () => {
 console.log(user?.role);
 useEffect(() => {
     
-    if (user && user?.role !== 'ADMIN') {
+ if (!token || (user && user.role !== 'ADMIN')){
       setDialogInfo({
         open: true,
         title: 'Access Denied',
         message: 'You are not authorized to view the admin dashboard.',
         type: 'error',
       });
+
 
       setTimeout(() => navigate('/'), 1500);
     }
