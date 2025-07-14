@@ -8,6 +8,11 @@ import { useNavigate } from 'react-router-dom';
 
 
 import PropertyCard from '../components/PropertyCard'; 
+import SearchIcon from '@mui/icons-material/Search';
+import IconButton from '@mui/material/IconButton';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import ClearIcon from '@mui/icons-material/Clear';
+import Collapse from '@mui/material/Collapse';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchProperties,deleteProperty} from '../api/propertiesApi';
@@ -31,13 +36,15 @@ const PropertyListPage = () => {
         minBedrooms: '',
         minBathrooms: '',
     });
+    const [showFilters, setShowFilters] = useState(false); // State to toggle filter visibility
 
-    
+
+
 
 //-------------------------Select------------------
      const { data: properties=[], isLoading, isError, error } = useQuery({
-        queryKey: ['properties'],
-        queryFn: fetchProperties,
+        queryKey: ['properties', filters],
+        queryFn:()=> fetchProperties(filters),
     });
 //---------------------------------------------------
 
@@ -90,7 +97,27 @@ const handleDeleteClick = (id) => {
 //---------------------------------------------------
 
 
+//----------------Handle Filter Input Change-----------
+ const handleFilterChange = (e) => {
+        const { name, value } = e.target;
+        setFilters((prevFilters) => ({
+            ...prevFilters,
+            [name]: value,
+        }));
+    };
+//----------------------------------------------
 
+//------------------Reset All Filtr Back------------
+ const handleResetFilters = () => {
+        setFilters({
+            search: '',
+            minPrice: '',
+            maxPrice: '',
+            minBedrooms: '',
+            minBathrooms: '',
+        });
+    };
+//------------------------------------------------
   
 
   
@@ -99,7 +126,7 @@ const handleDeleteClick = (id) => {
 
  
     console.log(properties.id);//to test , remember to delte!
-
+ 
     return (
         
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
@@ -150,7 +177,7 @@ const handleDeleteClick = (id) => {
                                 name="minPrice"
                                 type="number"
                                 value={filters.minPrice}
-                                onChange={1}
+                                onChange={handleFilterChange}
                                 fullWidth
                                 size="small"
                             />
@@ -161,7 +188,7 @@ const handleDeleteClick = (id) => {
                                 name="maxPrice"
                                 type="number"
                                 value={filters.maxPrice}
-                                onChange={1}
+                                onChange={handleFilterChange}
                                 fullWidth
                                 size="small"
                             />
@@ -172,7 +199,7 @@ const handleDeleteClick = (id) => {
                                 name="minBedrooms"
                                 type="number"
                                 value={filters.minBedrooms}
-                                onChange={1}
+                                onChange={handleFilterChange}
                                 fullWidth
                                 size="small"
                             />
@@ -184,7 +211,7 @@ const handleDeleteClick = (id) => {
                                 type="number"
                                 step="0.5"
                                 value={filters.minBathrooms}
-                                onChange={1}
+                                onChange={handleFilterChange}
                                 fullWidth
                                 size="small"
                             />
@@ -206,7 +233,7 @@ const handleDeleteClick = (id) => {
                         <Grid item xs={12} key={property.id}>
                             <PropertyCard
                                 property={property}
-                                onDelete={''}                              
+                                onDelete={'handleDeleteClick'}                              
                                 onEdit={() => navigate(`/properties/edit/${property.id}`)}
                                 isAuthenticated={!!token}
                                 

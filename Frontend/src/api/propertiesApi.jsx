@@ -1,7 +1,18 @@
 const API_BASE_URL = 'http://localhost:5000/api';
 
-export const fetchProperties = async () => {
-    const response = await fetch(`${API_BASE_URL}/properties`);
+export const fetchProperties = async (filters = {}) => {
+    
+    const queryParams = new URLSearchParams();
+    if (filters.search) queryParams.append('search', filters.search);
+    if (filters.minPrice) queryParams.append('minPrice', filters.minPrice);
+    if (filters.maxPrice) queryParams.append('maxPrice', filters.maxPrice);
+    if (filters.minBedrooms) queryParams.append('minBedrooms', filters.minBedrooms);
+    if (filters.minBathrooms) queryParams.append('minBathrooms', filters.minBathrooms);
+
+
+    
+    const url =  `${API_BASE_URL}/properties?${queryParams.toString()}`;
+    const response =await fetch(url);
     if (!response.ok) {
         throw new Error('Failed to fetch properties');
     }
