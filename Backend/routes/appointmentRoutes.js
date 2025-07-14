@@ -9,25 +9,26 @@ const {
   
 } = require('../controllers/appointmentController');
 const { protect } = require('../middleware/authMiddleware');
+const { authorize } = require('../middleware/authorize');
 
 
 const router = express.Router();
 
 
-router.post('/',protect, createAppointment);
+router.post('/',protect,authorize(['CUSTOMER']), createAppointment);
 
-router.get('/', getAllAppointments);
-
-
- router.get('/my-customer-appointments',protect,getMyCustomerAppointments);
-
-router.get('/my-agent-appointments',protect,getMyAgentAppointments);
+router.get('/', protect,authorize(['ADMIN']), getAllAppointments);
 
 
-router.put('/:id/confirm', confirmAppointment);
+ router.get('/my-customer-appointments',protect,authorize(['CUSTOMER']),getMyCustomerAppointments);
+
+router.get('/my-agent-appointments',protect,authorize(['AGENT']),getMyAgentAppointments);
 
 
- router.put('/:id/status', updateAppointmentStatus);
+router.put('/:id/confirm',protect, authorize(['ADMIN']),  confirmAppointment);
+
+
+ router.put('/:id/status', protect,  authorize(['ADMIN', 'AGENT', 'CUSTOMER']), updateAppointmentStatus);
 
 
 
