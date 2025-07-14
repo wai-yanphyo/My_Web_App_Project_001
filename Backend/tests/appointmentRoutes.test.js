@@ -91,6 +91,27 @@ describe('Appointment API Routes', () => {
     expect(res.body.status).toBe('PENDING');
   });
 
+   test('PUT /api/appointments/:id/confirm confirms appointment', async () => {
+    prisma.appointment.findUnique.mockResolvedValue({ id: 1, agentId: null });
+    prisma.user.findUnique.mockResolvedValue({ id: 2, role: 'AGENT' });
+
+    prisma.appointment.update.mockResolvedValue({
+      id: 1,
+      status: 'CONFIRMED',
+      agentId: 2,
+      property: { address: 'Test' },
+      customer: { email: 'customer@example.com' },
+      agent: { email: 'agent@example.com' }
+    });
+
+    const res = await request(app)
+      .put('/api/appointments/1/confirm')
+      .send({ agentId: 2 });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body.status).toBe('CONFIRMED');
+  });
+
  
   
 });
