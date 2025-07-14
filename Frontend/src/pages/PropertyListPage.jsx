@@ -235,7 +235,7 @@ const handleDeleteClick = (id) => {
                                 property={property}
                                 onDelete={'handleDeleteClick'}                              
                                 onEdit={() => navigate(`/properties/edit/${property.id}`)}
-                                isAuthenticated={!!token}
+                                isAuthenticated={!!token && user?.role!='CUSTOMER'}
                                 
                             />
                         </Grid>

@@ -42,30 +42,71 @@ const MyAppointmentsPage = () => {
     const queryClient = useQueryClient();
 
     const [dialogInfo, setDialogInfo] = useState({ open: false, title: '', message: '', type: 'info', confirmAction: null });
+        console.log(user?.role);
 
-    useEffect(() => {
-        console.log(user);
-        // if (!user) { 
-        //     setDialogInfo({ open: true, title: 'Access Denied', message: 'Please log in to view your appointments.', type: 'error',confirmAction: null});
-        //     setTimeout(() => navigate('/login'), 1500); 
-        // } 
-        //    else 
+    // useEffect(() => {
+    //     // if (!user) { 
+    //     //     setDialogInfo({ open: true, title: 'Access Denied', message: 'Please log in to view your appointments.', type: 'error',confirmAction: null});
+    //     //     setTimeout(() => navigate('/login'), 1500); 
+    //     // } 
+    //     //    else 
             
-            if(user?.role !== 'CUSTOMER' && user?.role !== 'AGENT') {
-            setDialogInfo({ 
-                open: true, 
-                title: 'Access Denied',
-                 message: 'You are not authorized to view this page.',
-                  type: 'error' ,
-                  });
-            setTimeout(() => navigate('/'), 1500); 
-        }
-     }, [user, navigate]);
-console.log(user?.role)
+    //         if(user?.role != 'CUSTOMER') {
+    //         setDialogInfo({ 
+    //             open: true, 
+    //             title: 'Access Denied',
+    //              message: 'You are not authorized to view this page.',
+    //               type: 'error' ,
+    //               });
+    //         setTimeout(() => navigate('/'), 1500); 
+    //     }
+    //  }, [user, navigate]);
+
+console.log("User from useAuth:", user);
+useEffect(() => {
+  if (user === null) return;
+
+  if (!user) {
+    setDialogInfo({
+      open: true,
+      title: 'Access Denied',
+      message: 'Please log in to view your appointments.',
+      type: 'error',
+    });
+    setTimeout(() => navigate('/login'), 1500);
+    return;
+  }
+
+  if (user?.role?.toUpperCase() !== 'CUSTOMER') {
+    setDialogInfo({
+      open: true,
+      title: 'Access Denied',
+      message: 'You are not authorized to view this page.',
+      type: 'error',
+    });
+    setTimeout(() => navigate('/'), 1500);
+  }
+}, [user, navigate]);
+
+
+
+
+// console.log(user?.role)
+//  useEffect(() => {
+//   const token = localStorage.getItem('token'); // or use context/state
+//   if (!token) {
+//     console.warn('No token found');
+//     return;
+//   }
+
+//   fetchMyCustomerAppointments(token)
+//     .then(data => console.log('Appointments:', data))
+//     .catch(err => console.error('API Error:', err));
+// }, []);
 
 
     const { data: customerAppointments, isLoading: isLoadingCustomer, isError: isErrorCustomer, error: errorCustomer } = useQuery({
-        queryKey: ['myCustomerAppointments', 1],
+        queryKey: ['myCustomerAppointments', user?.id],
         queryFn: () => fetchMyCustomerAppointments(token),
         enabled: user?.role === 'CUSTOMER', 
     });

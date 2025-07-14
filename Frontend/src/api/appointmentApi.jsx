@@ -25,7 +25,6 @@ export const fetchMyCustomerAppointments = async (token) => {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(token),
     });
     if (!response.ok) {
         const errorData = await response.json();

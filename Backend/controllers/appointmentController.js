@@ -7,7 +7,7 @@ const { AppointmentStatus } = require('@prisma/client');
 
 const createAppointment = async (req, res) => {
     const { propertyId, appointmentDate } = req.body;
-    const customerId  = 1;
+    const customerId  = req.user.id;
    
     if (!propertyId || !appointmentDate) {
         return res.status(400).json({ message: 'Please provide property ID and appointment date.' });
