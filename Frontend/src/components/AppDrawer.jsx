@@ -12,6 +12,8 @@ import {
  } from "@mui/material";
 
  import HowToRegIcon from '@mui/icons-material/HowToReg';
+ 
+
 
  
  import {
@@ -25,6 +27,7 @@ import {
  
 
  import { deepPurple } from "@mui/material/colors";
+ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import { useState } from "react";
 import { useApp } from '../ThemedApp';
 
@@ -35,9 +38,11 @@ import { useApp } from '../ThemedApp';
 
  
 const AppDrawer=()=> {
-        
+    
         const { user, handleLogout } = useAuth();
          const {showDrawer, setShowDrawer }=useApp();
+
+         console.log(user?.rolee)
             return (
                     <div>
                     <Drawer
@@ -70,17 +75,15 @@ const AppDrawer=()=> {
                                 background: deepPurple[500],
                             }}
                             />
-                            <Typography sx={{ fontWeight: "bold" }}>
-                            Wai Yan Phyo
+                           <Typography sx={{ fontWeight: "bold" }}>
+                            {user?.email ? user.email.split("@")[0] : 'Guest'}
                             </Typography>
                         </Box>
-
                         </Box>
 
                        
 
                         <List>
-                            {/* Properties Link to see my properties */}
                             <ListItem disablePadding>
                                 <ListItemButton component={Link} to="/">
                                     <ListItemIcon>
@@ -89,15 +92,26 @@ const AppDrawer=()=> {
                                     <ListItemText primary="Properties" />
                                 </ListItemButton>
                             </ListItem>
+
+                            {user?.role === 'ADMIN' && (
+                            <>
+                                <ListItem disablePadding>
+                                <ListItemButton component={Link} to="/admindashboard">
+                                    <ListItemIcon>
+                                    <AdminPanelSettingsIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Admin Panel" />
+                                </ListItemButton>
+                                </ListItem>
+                            </>
+                            )}
                         
                             {user ? (
                                 
                                 <>
-                                    {/* user eamil dispaly text */}
                                     <ListItem disablePadding>
-                                        <ListItemText primary={`Hello Wai Yan`} sx={{ ml: 2, py: 1 }} />
+                                             <ListItemText primary={`Hello, ${user?.email || 'Guest'}`} sx={{ ml: 2, py: 1 }} />
                                     </ListItem>
-                                    {/* Logout Button */}
                                     <ListItem disablePadding>
                                         <ListItemButton onClick={handleLogout}>
                                             <ListItemIcon>
@@ -110,8 +124,7 @@ const AppDrawer=()=> {
                             ) : (
                                             
                             <>
-                            
-                            {/* can go eaily to login page by clicking on it */}
+
                             <ListItem disablePadding>
                                 <ListItemButton component={Link} to="/login">
                                     <ListItemIcon>
@@ -129,10 +142,9 @@ const AppDrawer=()=> {
                                     </ListItemIcon>
                                     <ListItemText primary="Register" />
                                 </ListItemButton>
-                            </ListItem>
+                            </ListItem>              
                                             
-                                            
-                            </>
+                           </>
                             
                             )}
                         </List>
