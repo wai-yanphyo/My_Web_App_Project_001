@@ -183,12 +183,31 @@ const deleteProperty = async (req, res) => {
 };
 
 
+const getMyProperties = async (req, res) => {
+    
+    const ownerId = req.user.id;
+    try {
+        const properties = await prisma.property.findMany({
+            where: { ownerId: ownerId },
+            include: { owner: { select: { email: true, id: true } } }
+        });
+        res.status(200).json(properties);
+    } catch (error) {
+        console.error("It is working");
+        console.error('Error fetching agent properties:', error);
+        res.status(500).json({ message: 'Server error while fetching your properties.' });
+    }
+};
+
+
 module.exports = {
     getProperties,
     getPropertyById,
     createProperty,
     updateProperty,
-    deleteProperty
+    deleteProperty,
+    getMyProperties
+
     
     
 };
