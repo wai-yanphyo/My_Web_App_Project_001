@@ -66,5 +66,31 @@ describe('Appointment API Routes', () => {
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual(fakeAppointments);
   });
+
+  test('POST /api/appointments creates an appointment', async () => {
+    const appointmentData = {
+      propertyId: 1,
+      appointmentDate: '2099-01-01T10:00:00Z'
+    };
+
+    prisma.property.findUnique.mockResolvedValue({ id: 1 });
+    prisma.appointment.create.mockResolvedValue({
+      id: 1,
+      ...appointmentData,
+      customerId: 1,
+      status: 'PENDING',
+      property: { address: '123 St', imageUrl: 'url' },
+      customer: { email: 'test@example.com' }
+    });
+
+    const res = await request(app)
+      .post('/api/appointments')
+      .send(appointmentData);
+
+    expect(res.statusCode).toBe(201);
+    expect(res.body.status).toBe('PENDING');
+  });
+
+ 
   
 });
