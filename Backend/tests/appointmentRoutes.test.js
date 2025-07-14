@@ -133,25 +133,25 @@ describe('Appointment API Routes', () => {
   });
 
 
-  test('GET /api/appointments/my/customer returns customer appointments', async () => {
+  test('GET /api/appointments/my-customer-appointments returns customer appointments', async () => {
     const mockAppointments = [
       { id: 1, property: { address: '123' }, agent: { email: 'agent@example.com' } }
     ];
     prisma.appointment.findMany.mockResolvedValue(mockAppointments);
 
-    const res = await request(app).get('/api/appointments/my/customer');
+    const res = await request(app).get('/api/appointments/my-customer-appointments');
 
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual(mockAppointments);
   });
 
-  test('GET /api/appointments/my/agent returns agent appointments', async () => {
+  test('GET /api/appointments/my-agent-appointments returns agent appointments', async () => {
     const mockAppointments = [
       { id: 2, property: { address: '456' }, customer: { email: 'customer@example.com' } }
     ];
     prisma.appointment.findMany.mockResolvedValue(mockAppointments);
 
-    const res = await request(app).get('/api/appointments/my/agent');
+    const res = await request(app).get('/api/appointments/my-agent-appointments');
 
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual(mockAppointments);
