@@ -9,7 +9,7 @@ const getProperties = async (req, res) => {
      if (search) {
         whereClause.address = {
             contains: search,
-            mode: 'insensitive',
+            // mode: 'insensitive',
         
         };
     }
