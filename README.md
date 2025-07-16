@@ -72,8 +72,65 @@ AnywhereProperty is a real estate listing platform based in Myanmar. Our goal is
 ### Clone the Project
 
 ```bash
-git clone https://github.com/my-username/anywhereproperty-webapp.git
-cd anywhereproperty-webapp
+git clone https://github.com/wai-yanphyo/My_Web_App_Project_001
+cd My_Web_App_Project_001
+
+
+
+***For images***
+https://placehold.co/
+
+
+***To request logic and sampleformat reactQuery Logic****
+https://chatgpt.com/share/68776870-7b70-8000-8d22-c573a1b31bbc
+
+
+****Asking For React FormDiaalog******
+https://chatgpt.com/share/68776cc9-b54c-8000-b94f-d0e1c660e086
+
+*** Request explainning For UI components*****
+https://chatgpt.com/share/6877712d-0294-8000-9414-6985447d9439
+
+
+***For Jest Brain Storming By using Gen AI***
+https://chatgpt.com/share/68762197-d1cc-8000-8a28-33d8c6ae14dc
+
+
+***Reference For icons***
+https://mui.com/material-ui/material-icons/
+
+
+
+*****UI Components study Links****
+https://vitejs.dev/guide/
+https://reactjs.org/docs/getting-started.html
+
+https://blog.logrocket.com/using-vite-react/
+https://reactpatterns.com/
+https://github.com/brillout/awesome-react-components
+
+
+****Youtube Tutorial Links****
+https://www.youtube.com/watch?v=SccSCuHhOw0
+https://www.youtube.com/watch?v=t5ffPXorFf4
+https://www.youtube.com/watch?v=mbsmsi7l3r4
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
